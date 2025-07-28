@@ -1,0 +1,230 @@
+.panel {
+  width: 350px;
+  background: white;
+  border-left: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.header h2 {
+  margin: 0 0 10px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.instructions {
+  margin-bottom: 15px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.instructions p {
+  margin: 0 0 5px 0;
+  line-height: 1.4;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.tab.active {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.itemsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.itemCard {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.itemCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: #667eea;
+}
+
+.itemPreview {
+  width: 100%;
+  height: 80px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.itemDimensions {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.itemInfo h3 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.material {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  color: #666;
+  text-transform: capitalize;
+}
+
+.price {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+.placedItems {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.placedItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.placedItem:hover {
+  border-color: #667eea;
+  background: #f8f9ff;
+}
+
+.placedItem.selected {
+  border-color: #667eea;
+  background: #e8f0ff;
+}
+
+.placedItem .itemPreview {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  margin: 0;
+}
+
+.placedItem .itemInfo {
+  flex: 1;
+}
+
+.placedItem .itemInfo h4 {
+  margin: 0 0 2px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.placedItem .itemInfo p {
+  margin: 0;
+  font-size: 12px;
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.removeButton {
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.removeButton:hover {
+  background: #cc0000;
+}
+
+.totalPrice {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8f9ff;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+  border: 1px solid #e0e0e0;
+}
+
+.emptyState {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 40px 20px;
+}
+
+@media (max-width: 768px) {
+  .panel {
+    width: 100%;
+    height: 40vh;
+    border-left: none;
+    border-top: 1px solid #e0e0e0;
+  }
+  
+  .itemsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+} 

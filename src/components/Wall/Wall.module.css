@@ -1,0 +1,7 @@
+.wall {
+  position: relative;
+}
+
+.gridLines {
+  opacity: 0.3;
+} 

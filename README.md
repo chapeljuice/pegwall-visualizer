@@ -1,46 +1,122 @@
-# Getting Started with Create React App
+# PegWall - Furniture Visualization App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern web application for visualizing plywood furniture in 3D space. Built with React, TypeScript, and Three.js.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **3D Visualization**: Interactive 3D scene with realistic furniture rendering
+- **Drag & Drop**: Place furniture items on walls and floors
+- **Furniture Catalog**: Browse available furniture items with specifications
+- **Real-time Pricing**: See total cost of your furniture selection
+- **Responsive Design**: Works on desktop and mobile devices
+- **Modern UI**: Clean, intuitive interface with CSS Modules
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Frontend**: React 18 with TypeScript
+- **3D Graphics**: Three.js with React Three Fiber
+- **Styling**: CSS Modules for component-scoped styles
+- **Build Tool**: Create React App
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js (v16 or higher)
+- npm or yarn
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd pegwall
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Install dependencies:
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Start the development server:
+```bash
+npm start
+```
 
-### `npm run eject`
+4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Project Structure
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+src/
+├── components/
+│   ├── FurnitureVisualizer/     # Main 3D visualization component
+│   ├── FurniturePanel/          # Side panel for furniture selection
+│   ├── FurnitureItem/           # Individual furniture item component
+│   └── Wall/                    # 3D wall and floor components
+├── types/
+│   └── furniture.ts             # TypeScript interfaces
+└── App.tsx                      # Main application component
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Usage
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+1. **Browse Furniture**: Use the "Available Items" tab to see furniture options
+2. **Place Items**: Click on any furniture item to place it in the 3D scene
+3. **Move Items**: Click and drag placed items to reposition them
+4. **Select Items**: Click on placed items to select them (highlighted in green)
+5. **Remove Items**: Use the "×" button to remove items from the scene
+6. **View Total**: Check the total price of your furniture selection
 
-## Learn More
+## Available Furniture
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **Floating Shelves**: Perfect for displaying books and decor
+- **Coffee Tables**: Sturdy tables for living rooms
+- **Dining Chairs**: Comfortable seating for meals
+- **Storage Cabinets**: Organized storage solutions
+- **Work Desks**: Professional workspace furniture
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Development
+
+### Adding New Furniture
+
+1. Add furniture data to the `availableItems` array in `FurniturePanel.tsx`
+2. Define dimensions, materials, and pricing
+3. The 3D rendering will automatically adapt to the new specifications
+
+### Styling
+
+- All components use CSS Modules for scoped styling
+- Global styles are in `App.css`
+- Component-specific styles are in `.module.css` files
+
+### 3D Scene
+
+- The scene includes walls, floor, and grid lines for reference
+- Lighting is configured for realistic furniture visualization
+- Orbit controls allow camera movement around the scene
+
+## Future Enhancements
+
+- **Backend Integration**: User accounts, saved designs, and order processing
+- **Authentication**: User login and profile management
+- **Advanced 3D Features**: Texture mapping, realistic materials
+- **Collaboration**: Share designs with others
+- **Export Options**: Generate images or 3D models of designs
+- **AR Integration**: View furniture in your actual space
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For questions or support, please open an issue in the repository.
