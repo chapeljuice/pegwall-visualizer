@@ -21,7 +21,7 @@ interface FurnitureItemProps {
 
 // Grid constants (in Three.js units - 1 unit = 1 foot)
 const GRID_HORIZONTAL_SPACING = 0.83; // 10 inches = 0.83 feet
-const GRID_VERTICAL_SPACING = 0.67;   // 8 inches = 0.67 feet
+const GRID_VERTICAL_SPACING = 0.5;   // 6 inches = 0.5 feet
 const WALL_POSITION = -2; // Z position of the wall
 
 const FurnitureItem: React.FC<FurnitureItemProps> = ({
@@ -70,17 +70,17 @@ const FurnitureItem: React.FC<FurnitureItemProps> = ({
     const [x, y, z] = position;
     
     // Constrain X position (left/right boundaries) - top-left corner positioning
-    const minX = WALL_LEFT;
-    const maxX = WALL_RIGHT - width;
+    const minX = WALL_LEFT + GRID_HORIZONTAL_SPACING;
+    const maxX = WALL_RIGHT - width - GRID_HORIZONTAL_SPACING;
     const constrainedX = Math.max(minX, Math.min(maxX, x));
     
     // Constrain Y position (bottom/top boundaries) - top-left corner positioning
-    const minY = WALL_BOTTOM;
-    const maxY = WALL_TOP - height;
+    const minY = WALL_BOTTOM + GRID_VERTICAL_SPACING;
+    const maxY = WALL_TOP - height - GRID_VERTICAL_SPACING;
     const constrainedY = Math.max(minY, Math.min(maxY, y));
     
     return [constrainedX, constrainedY, z];
-  }, [width, height, WALL_LEFT, WALL_RIGHT, WALL_BOTTOM, WALL_TOP]);
+  }, [width, height, WALL_LEFT, WALL_RIGHT, WALL_BOTTOM, WALL_TOP, GRID_HORIZONTAL_SPACING, GRID_VERTICAL_SPACING]);
 
   // Function to check if a position conflicts with other items
   const hasCollision = (position: [number, number, number]): boolean => {

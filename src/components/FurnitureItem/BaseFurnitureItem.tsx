@@ -1,11 +1,11 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useCallback, useEffect, ReactNode } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Box, Html } from '@react-three/drei';
+import { Html } from '@react-three/drei';
 import { Mesh, Vector3, Vector2, Raycaster, Plane } from 'three';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import styles from './FurnitureItem.module.css';
 
-interface CubbyProps {
+interface BaseFurnitureItemProps {
   item: FurnitureItemType;
   isSelected: boolean;
   onSelect: () => void;
@@ -17,14 +17,16 @@ interface CubbyProps {
     height: number; // in feet
   };
   placedItems?: FurnitureItemType[]; // All placed items for collision detection
+  children: ReactNode; // The visual representation of the furniture
+  showLabel?: boolean; // Whether to show the item label
 }
 
 // Grid constants (in Three.js units - 1 unit = 1 foot)
-const GRID_HORIZONTAL_SPACING = 0.83; // 10 inches = 0.83 feet
+const GRID_HORIZONTAL_SPACING = 0.67; // 8 inches = 0.67 feet
 const GRID_VERTICAL_SPACING = 0.5;   // 6 inches = 0.5 feet
 const WALL_POSITION = -2; // Z position of the wall
 
-const Cubby: React.FC<CubbyProps> = ({
+const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
   item,
   isSelected,
   onSelect,
@@ -33,6 +35,8 @@ const Cubby: React.FC<CubbyProps> = ({
   onDragEnd,
   wallDimensions = { width: 8, height: 8 }, // Default to 8x8 feet
   placedItems = [], // Default to empty array
+  children,
+  showLabel = true,
 }) => {
   const meshRef = useRef<Mesh>(null);
   const { camera, gl } = useThree();
@@ -43,7 +47,6 @@ const Cubby: React.FC<CubbyProps> = ({
 
   const { width, height, depth } = item.dimensions;
   const [x, y, z] = item.position;
-  const wallThickness = 0.083; // 1 inch = 0.083 feet
 
   // Wall boundaries (in Three.js units)
   const WALL_WIDTH = wallDimensions.width;
@@ -95,29 +98,113 @@ const Cubby: React.FC<CubbyProps> = ({
 
   // Function to snap position to grid
   const snapToGrid = useCallback((position: Vector3): [number, number, number] => {
-    const snappedX = Math.round(position.x / GRID_HORIZONTAL_SPACING) * GRID_HORIZONTAL_SPACING;
-    const snappedY = Math.round(position.y / GRID_VERTICAL_SPACING) * GRID_VERTICAL_SPACING;
-    const snappedZ = WALL_POSITION; // Always snap to wall
+    // Calculate the grid position that the furniture should snap to
+    // The furniture should align its top-left corner with the peg hole positions
+    const wallWidth = wallDimensions.width;
+    const wallHeight = wallDimensions.height;
     
-    return [snappedX, snappedY, snappedZ];
-  }, []);
+    // Generate the same grid positions as the Wall component
+    const horizontalPositions: number[] = [];
+    const verticalPositions: number[] = [];
+
+    // Generate horizontal positions (skip first column) - same as Wall component
+    const horizontalCount = Math.floor((wallWidth - GRID_HORIZONTAL_SPACING) / GRID_HORIZONTAL_SPACING);
+    for (let i = 1; i <= horizontalCount; i++) {
+      const x = -wallWidth / 2 + (i * GRID_HORIZONTAL_SPACING);
+      horizontalPositions.push(Number(x.toFixed(2)));
+    }
+
+    // Generate vertical positions (skip bottom row) - same as Wall component
+    const verticalCount = Math.floor((wallHeight - GRID_VERTICAL_SPACING) / GRID_VERTICAL_SPACING);
+    for (let i = 1; i <= verticalCount; i++) {
+      const y = i * GRID_VERTICAL_SPACING;
+      verticalPositions.push(Number(y.toFixed(2)));
+    }
+
+    // Find the closest grid position
+    // The furniture should align its top-left corner with the peg hole's top-left corner
+    // Peg holes are 0.083 wide x 0.25 tall, so we need to offset by half their dimensions
+    const pegHoleWidth = 0.083; // 1 inch
+    const pegHoleHeight = 0.25; // 3 inches
+    
+    let closestX = horizontalPositions[0];
+    let closestY = verticalPositions[0];
+    let minDistance = Infinity;
+
+    for (const x of horizontalPositions) {
+      for (const y of verticalPositions) {
+        // Calculate the top-left corner of the peg hole
+        const pegHoleTopLeftX = x - pegHoleWidth / 2;
+        const pegHoleTopLeftY = y - pegHoleHeight / 2;
+        
+        const distance = Math.sqrt((position.x - pegHoleTopLeftX) ** 2 + (position.y - pegHoleTopLeftY) ** 2);
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestX = pegHoleTopLeftX;
+          closestY = pegHoleTopLeftY;
+        }
+      }
+    }
+
+    return [closestX, closestY, WALL_POSITION];
+  }, [wallDimensions, GRID_HORIZONTAL_SPACING, GRID_VERTICAL_SPACING]);
 
   // Function to constrain position within wall boundaries
   const constrainToWall = useCallback((position: [number, number, number]): [number, number, number] => {
     const [x, y, z] = position;
     
-    // Constrain X position (left/right boundaries) - top-left corner positioning
-    const minX = WALL_LEFT + GRID_HORIZONTAL_SPACING;
-    const maxX = WALL_RIGHT - width - GRID_HORIZONTAL_SPACING;
-    const constrainedX = Math.max(minX, Math.min(maxX, x));
+    // Generate the same grid positions as the Wall component
+    const horizontalPositions: number[] = [];
+    const verticalPositions: number[] = [];
+
+    // Generate horizontal positions (skip first column) - same as Wall component
+    const horizontalCount = Math.floor((WALL_WIDTH - GRID_HORIZONTAL_SPACING) / GRID_HORIZONTAL_SPACING);
+    for (let i = 1; i <= horizontalCount; i++) {
+      const gridX = -WALL_WIDTH / 2 + (i * GRID_HORIZONTAL_SPACING);
+      horizontalPositions.push(Number(gridX.toFixed(2)));
+    }
+
+    // Generate vertical positions (skip bottom row) - same as Wall component
+    const verticalCount = Math.floor((WALL_HEIGHT - GRID_VERTICAL_SPACING) / GRID_VERTICAL_SPACING);
+    for (let i = 1; i <= verticalCount; i++) {
+      const gridY = i * GRID_VERTICAL_SPACING;
+      verticalPositions.push(Number(gridY.toFixed(2)));
+    }
+
+    // Find the closest valid grid position that keeps the furniture within bounds
+    // The furniture should align its top-left corner with the peg hole's top-left corner
+    const pegHoleWidth = 0.083; // 1 inch
+    const pegHoleHeight = 0.25; // 3 inches
     
-    // Constrain Y position (bottom/top boundaries) - top-left corner positioning
-    const minY = WALL_BOTTOM + GRID_VERTICAL_SPACING;
-    const maxY = WALL_TOP - height - GRID_VERTICAL_SPACING;
-    const constrainedY = Math.max(minY, Math.min(maxY, y));
-    
-    return [constrainedX, constrainedY, z];
-  }, [width, height, WALL_LEFT, WALL_RIGHT, WALL_BOTTOM, WALL_TOP, GRID_HORIZONTAL_SPACING, GRID_VERTICAL_SPACING]);
+    let closestX = horizontalPositions[0] - pegHoleWidth / 2;
+    let closestY = verticalPositions[0] - pegHoleHeight / 2;
+    let minDistance = Infinity;
+
+    for (const gridX of horizontalPositions) {
+      for (const gridY of verticalPositions) {
+        // Calculate the top-left corner of the peg hole
+        const pegHoleTopLeftX = gridX - pegHoleWidth / 2;
+        const pegHoleTopLeftY = gridY - pegHoleHeight / 2;
+        
+        // Check if this position would keep the furniture within wall boundaries
+        if (
+          pegHoleTopLeftX >= WALL_LEFT + GRID_HORIZONTAL_SPACING &&
+          pegHoleTopLeftX + width <= WALL_RIGHT - GRID_HORIZONTAL_SPACING &&
+          pegHoleTopLeftY >= WALL_BOTTOM + GRID_VERTICAL_SPACING &&
+          pegHoleTopLeftY + height <= WALL_TOP - GRID_VERTICAL_SPACING
+        ) {
+          const distance = Math.sqrt((x - pegHoleTopLeftX) ** 2 + (y - pegHoleTopLeftY) ** 2);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestX = pegHoleTopLeftX;
+            closestY = pegHoleTopLeftY;
+          }
+        }
+      }
+    }
+
+    return [closestX, closestY, z];
+  }, [width, height, WALL_LEFT, WALL_RIGHT, WALL_BOTTOM, WALL_TOP, WALL_WIDTH, WALL_HEIGHT, GRID_HORIZONTAL_SPACING, GRID_VERTICAL_SPACING]);
 
   // Function to get intersection with wall plane
   const getWallIntersection = useCallback((mouseX: number, mouseY: number): Vector3 | null => {
@@ -222,111 +309,57 @@ const Cubby: React.FC<CubbyProps> = ({
 
   return (
     <group position={[x, y, z]}>
-      {/* Back wall */}
-      <Box
-        args={[width, height, wallThickness]}
-        position={[width / 2, height / 2, -depth / 2 + wallThickness / 2]}
-        onPointerDown={handlePointerDown}
-      >
-        <meshStandardMaterial
-          color={item.color}
-          roughness={0.7}
-          metalness={0.1}
-        />
-      </Box>
-
-      {/* Left wall */}
-      <Box
-        args={[wallThickness, height, depth]}
-        position={[wallThickness / 2, height / 2, 0]}
-      >
-        <meshStandardMaterial
-          color={item.color}
-          roughness={0.7}
-          metalness={0.1}
-        />
-      </Box>
-
-      {/* Right wall */}
-      <Box
-        args={[wallThickness, height, depth]}
-        position={[width - wallThickness / 2, height / 2, 0]}
-      >
-        <meshStandardMaterial
-          color={item.color}
-          roughness={0.7}
-          metalness={0.1}
-        />
-      </Box>
-
-      {/* Top wall */}
-      <Box
-        args={[width, wallThickness, depth]}
-        position={[width / 2, height - wallThickness / 2, 0]}
-      >
-        <meshStandardMaterial
-          color={item.color}
-          roughness={0.7}
-          metalness={0.1}
-        />
-      </Box>
-
-      {/* Bottom wall */}
-      <Box
-        args={[width, wallThickness, depth]}
-        position={[width / 2, wallThickness / 2, 0]}
-      >
-        <meshStandardMaterial
-          color={item.color}
-          roughness={0.7}
-          metalness={0.1}
-        />
-      </Box>
+      {/* The visual representation of the furniture */}
+      <group onPointerDown={handlePointerDown}>
+        {children}
+      </group>
       
       {/* Selection indicator */}
       {isSelected && (
-        <Box
-          args={[width + 0.05, height + 0.05, depth + 0.05]}
-          position={[width / 2, height / 2, 0]}
-        >
-          <meshStandardMaterial
-            color="#00ff00"
-            transparent
-            opacity={0.3}
-            wireframe
-          />
-        </Box>
+        <group position={[width / 2, height / 2, 0]}>
+          <mesh>
+            <boxGeometry args={[width + 0.05, height + 0.05, depth + 0.05]} />
+            <meshStandardMaterial
+              color="#00ff00"
+              transparent
+              opacity={0.3}
+              wireframe
+            />
+          </mesh>
+        </group>
       )}
       
       {/* Overlap indicator (red glow when overlapping) */}
       {isOverlapping && (
-        <Box
-          args={[width + 0.1, height + 0.1, depth + 0.1]}
-          position={[width / 2, height / 2, 0]}
-        >
-          <meshStandardMaterial
-            color="#ff0000"
-            transparent
-            opacity={0.4}
-            wireframe
-          />
-        </Box>
+        <group position={[width / 2, height / 2, 0]}>
+          <mesh>
+            <boxGeometry args={[width + 0.1, height + 0.1, depth + 0.1]} />
+            <meshStandardMaterial
+              color="#ff0000"
+              transparent
+              opacity={0.4}
+              wireframe
+            />
+          </mesh>
+        </group>
       )}
       
       {/* Item label */}
-      <Html
-        position={[width / 2, height + 0.3, 0]}
-        center
-        distanceFactor={10}
-        occlude
-      >
-        <div className={styles.label}>
-          <span className={styles.name}>{item.name}</span>
-          <span className={styles.price}>${item.price}</span>
-        </div>
-      </Html>
+      {showLabel && (
+        <Html
+          position={[width / 2, height + 0.3, 0]}
+          center
+          distanceFactor={10}
+          occlude
+        >
+          <div className={styles.label}>
+            <span className={styles.name}>{item.name}</span>
+            <span className={styles.price}>${item.price}</span>
+          </div>
+        </Html>
+      )}
     </group>
   );
 };
 
-export default Cubby; 
+export default BaseFurnitureItem; 

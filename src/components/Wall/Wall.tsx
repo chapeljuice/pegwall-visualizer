@@ -19,22 +19,26 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
   const wallDepth = 0.1; // 1.2 inches thick
 
   // Grid constants (in Three.js units)
-  const GRID_HORIZONTAL_SPACING = 0.83; // 10 inches = 0.83 feet
-  const GRID_VERTICAL_SPACING = 0.67;   // 8 inches = 0.67 feet
+  const GRID_HORIZONTAL_SPACING = 0.67; // 8 inches = 0.67 feet
+  const GRID_VERTICAL_SPACING = 0.5;   // 6 inches = 0.5 feet
   const WALL_POSITION = -2; // Z position of the wall
 
   // Calculate grid positions
   const horizontalPositions: number[] = [];
   const verticalPositions: number[] = [];
 
-  // Generate horizontal positions (skip first column)
-  for (let x = -wallWidth / 2 + GRID_HORIZONTAL_SPACING; x <= wallWidth / 2 - GRID_HORIZONTAL_SPACING; x += GRID_HORIZONTAL_SPACING) {
-    horizontalPositions.push(x);
+  // Generate horizontal positions (skip first column) - same as FurnitureVisualizer
+  const horizontalCount = Math.floor((wallWidth - GRID_HORIZONTAL_SPACING) / GRID_HORIZONTAL_SPACING);
+  for (let i = 1; i <= horizontalCount; i++) {
+    const x = -wallWidth / 2 + (i * GRID_HORIZONTAL_SPACING);
+    horizontalPositions.push(Number(x.toFixed(2)));
   }
 
-  // Generate vertical positions (skip bottom row)
-  for (let y = GRID_VERTICAL_SPACING; y <= wallHeight - GRID_VERTICAL_SPACING; y += GRID_VERTICAL_SPACING) {
-    verticalPositions.push(y);
+  // Generate vertical positions (skip bottom row) - same as FurnitureVisualizer
+  const verticalCount = Math.floor((wallHeight - GRID_VERTICAL_SPACING) / GRID_VERTICAL_SPACING);
+  for (let i = 1; i <= verticalCount; i++) {
+    const y = i * GRID_VERTICAL_SPACING;
+    verticalPositions.push(Number(y.toFixed(2)));
   }
 
   return (
