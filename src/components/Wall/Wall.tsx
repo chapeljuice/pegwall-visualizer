@@ -63,6 +63,8 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
           roughness={0.1}
           metalness={0}
           map={wallTexture}
+          emissive="#FFFFFF"
+          emissiveIntensity={0.1}
         />
       </Plane>
 

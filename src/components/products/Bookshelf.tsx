@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@react-three/drei';
+import { TextureLoader } from 'three';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import BaseFurnitureItem from './BaseFurnitureItem';
 
@@ -20,48 +21,52 @@ interface BookshelfProps {
 const Bookshelf: React.FC<BookshelfProps> = (props) => {
   const { item } = props;
   const { width, height, depth } = item.dimensions;
-  const wallThickness = 0.083; // 1 inch = 0.083 feet
+
+  // Load wooden texture
+  const woodenTexture = useMemo(() => {
+    const loader = new TextureLoader();
+    return loader.load('/images/wooden-texture.jpg');
+  }, []);
 
   return (
     <BaseFurnitureItem {...props}>
       {/* Bottom panel */}
       <Box
-        args={[width, wallThickness, depth]}
-        position={[width / 2, wallThickness / 2, 0]}
+        args={[width, 0.083, depth]}
+        position={[width / 2, 0.0415, 0]}
       >
         <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
+          map={woodenTexture}
           roughness={0.7}
           metalness={0.1}
         />
       </Box>
 
-      {/* Left panel */}
+      {/* Left side panel */}
       <Box
-        args={[wallThickness, height, depth]}
-        position={[wallThickness / 2, height / 2, 0]}
+        args={[0.083, height, depth]}
+        position={[0.0415, height / 2, 0]}
       >
         <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
+          map={woodenTexture}
           roughness={0.7}
           metalness={0.1}
         />
       </Box>
 
-      {/* Right panel */}
+      {/* Right side panel */}
       <Box
-        args={[wallThickness, height, depth]}
-        position={[width - wallThickness / 2, height / 2, 0]}
+        args={[0.083, height, depth]}
+        position={[width - 0.0415, height / 2, 0]}
       >
         <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
+          map={woodenTexture}
           roughness={0.7}
           metalness={0.1}
         />
       </Box>
 
-      {/* No front panel - open for easy access */}
-      {/* No top panel - open for easy access */}
+      {/* No front or top panels - open for books */}
     </BaseFurnitureItem>
   );
 };

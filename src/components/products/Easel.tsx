@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@react-three/drei';
+import { TextureLoader } from 'three';
 import BaseFurnitureItem from './BaseFurnitureItem';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 
@@ -31,6 +32,12 @@ const Easel: React.FC<EaselProps> = ({
 }) => {
   const { width, height, depth } = item.dimensions;
 
+  // Load wooden texture
+  const woodenTexture = useMemo(() => {
+    const loader = new TextureLoader();
+    return loader.load('/images/wooden-texture.jpg');
+  }, []);
+
   return (
     <BaseFurnitureItem
       item={item}
@@ -45,29 +52,49 @@ const Easel: React.FC<EaselProps> = ({
     >
       {/* Main easel structure */}
       <group>
-        {/* Back panel (plywood color) */}
+        {/* Back panel (wooden texture) */}
         <Box args={[width, height, 0.05]} position={[0, 0, -depth/2 + 0.025]}>
-          <meshStandardMaterial color="#F5F5DC" />
+          <meshStandardMaterial
+            map={woodenTexture}
+            roughness={0.7}
+            metalness={0.1}
+          />
         </Box>
         
         {/* Angled front panel (colored) - angled at 10 degrees forward */}
         <group rotation={[-0.175, 0, 0]} position={[0, 0, depth/2 - 0.025]}>
           <Box args={[width, height, 0.05]} position={[0, 0, 0]}>
-            <meshStandardMaterial color={item.color} />
+            <meshStandardMaterial
+              color={item.color}
+              roughness={0.7}
+              metalness={0.1}
+            />
           </Box>
         </group>
         
-        {/* Side supports (plywood color) */}
+        {/* Side supports (wooden texture) */}
         <Box args={[0.05, height, depth]} position={[-width/2 + 0.025, 0, 0]}>
-          <meshStandardMaterial color="#F5F5DC" />
+          <meshStandardMaterial
+            map={woodenTexture}
+            roughness={0.7}
+            metalness={0.1}
+          />
         </Box>
         <Box args={[0.05, height, depth]} position={[width/2 - 0.025, 0, 0]}>
-          <meshStandardMaterial color="#F5F5DC" />
+          <meshStandardMaterial
+            map={woodenTexture}
+            roughness={0.7}
+            metalness={0.1}
+          />
         </Box>
         
-        {/* Bottom support (plywood color) */}
+        {/* Bottom support (wooden texture) */}
         <Box args={[width, 0.05, depth]} position={[0, -height/2 + 0.025, 0]}>
-          <meshStandardMaterial color="#F5F5DC" />
+          <meshStandardMaterial
+            map={woodenTexture}
+            roughness={0.7}
+            metalness={0.1}
+          />
         </Box>
       </group>
     </BaseFurnitureItem>

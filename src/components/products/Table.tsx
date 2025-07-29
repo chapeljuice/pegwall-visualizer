@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@react-three/drei';
+import { TextureLoader } from 'three';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import BaseFurnitureItem from './BaseFurnitureItem';
 
@@ -20,19 +21,32 @@ interface TableProps {
 const Table: React.FC<TableProps> = (props) => {
   const { item } = props;
   const { width, height, depth } = item.dimensions;
-  
-  // Table dimensions
-  const tableTopThickness = 0.083; // 1 inch thick
-  const legWidth = 0.167; // 2 inches wide
-  const legHeight = height - tableTopThickness; // Leg height is table height minus top thickness
-  const legDepth = 0.167; // 2 inches deep
+
+  // Load wooden texture
+  const woodenTexture = useMemo(() => {
+    const loader = new TextureLoader();
+    return loader.load('/images/wooden-texture.jpg');
+  }, []);
 
   return (
     <BaseFurnitureItem {...props}>
-      {/* Table top - thin colored layer (like paint) */}
+      {/* Table top - thin colored layer on top of plywood base */}
+      {/* Plywood base */}
       <Box
-        args={[width, 0.01, depth]} // Very thin layer (0.01 feet = ~1/8 inch)
-        position={[width / 2, height - 0.005, 0]} // Positioned at the very top
+        args={[width, 0.5, depth]}
+        position={[width / 2, height - 0.25, 0]}
+      >
+        <meshStandardMaterial
+          map={woodenTexture}
+          roughness={0.7}
+          metalness={0.1}
+        />
+      </Box>
+      
+      {/* Colored top layer - made thicker to prevent see-through */}
+      <Box
+        args={[width, 0.1, depth]}
+        position={[width / 2, height - 0.05, 0]}
       >
         <meshStandardMaterial
           color={item.color}
@@ -41,49 +55,36 @@ const Table: React.FC<TableProps> = (props) => {
         />
       </Box>
 
-      {/* Table top base - plywood color underneath the paint */}
+      {/* Table legs */}
       <Box
-        args={[width, tableTopThickness - 0.01, depth]} // Remaining thickness minus paint layer
-        position={[width / 2, height - tableTopThickness / 2 - 0.005, 0]}
+        args={[0.25, height - 0.5, 0.25]}
+        position={[0.125, (height - 0.5) / 2, 0]}
       >
         <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
+          map={woodenTexture}
           roughness={0.7}
           metalness={0.1}
         />
       </Box>
 
-      {/* Front left leg */}
       <Box
-        args={[legWidth, legHeight, legDepth]}
-        position={[legWidth / 2, legHeight / 2, depth / 2 - legDepth / 2]}
+        args={[0.25, height - 0.5, 0.25]}
+        position={[width - 0.125, (height - 0.5) / 2, 0]}
       >
         <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
+          map={woodenTexture}
           roughness={0.7}
           metalness={0.1}
         />
       </Box>
 
-      {/* Front right leg */}
+      {/* Support beam connecting legs */}
       <Box
-        args={[legWidth, legHeight, legDepth]}
-        position={[width - legWidth / 2, legHeight / 2, depth / 2 - legDepth / 2]}
+        args={[width - 0.5, 0.25, 0.25]}
+        position={[width / 2, 0.125, 0]}
       >
         <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
-          roughness={0.7}
-          metalness={0.1}
-        />
-      </Box>
-
-      {/* Back support beam (connects to peg wall) */}
-      <Box
-        args={[width, legWidth, legDepth]}
-        position={[width / 2, legHeight / 2, -depth / 2 + legDepth / 2]}
-      >
-        <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
+          map={woodenTexture}
           roughness={0.7}
           metalness={0.1}
         />

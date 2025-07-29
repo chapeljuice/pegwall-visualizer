@@ -2,8 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import Wall from '../Wall/Wall';
-import Cubby10x10 from '../products/Cubby10x10';
-import Cubby20x10 from '../products/Cubby20x10';
+import Cubby from '../products/Cubby';
 import Hook from '../products/Hook';
 import Table from '../products/Table';
 import MagazineRack from '../products/MagazineRack';
@@ -236,36 +235,19 @@ const FurnitureVisualizer: React.FC = () => {
           {placedItems.map(item => {
             // Use specific components based on item name patterns
             if (item.name.includes('Cubby')) {
-              // Use Cubby10x10 for smaller cubbies, Cubby20x10 for larger ones
-              if (item.dimensions.width <= 0.83) { // 10" or smaller
-                return (
-                  <Cubby10x10
-                    key={item.id}
-                    item={item}
-                    isSelected={selectedItemId === item.id}
-                    onSelect={() => handleSelectItem(item.id)}
-                    onMove={handleMoveItem}
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
-                    wallDimensions={wallDimensions}
-                    placedItems={placedItems}
-                  />
-                );
-              } else {
-                return (
-                  <Cubby20x10
-                    key={item.id}
-                    item={item}
-                    isSelected={selectedItemId === item.id}
-                    onSelect={() => handleSelectItem(item.id)}
-                    onMove={handleMoveItem}
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
-                    wallDimensions={wallDimensions}
-                    placedItems={placedItems}
-                  />
-                );
-              }
+              return (
+                <Cubby
+                  key={item.id}
+                  item={item}
+                  isSelected={selectedItemId === item.id}
+                  onSelect={() => handleSelectItem(item.id)}
+                  onMove={handleMoveItem}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  wallDimensions={wallDimensions}
+                  placedItems={placedItems}
+                />
+              );
             }
             
             if (item.name.includes('Hook')) {

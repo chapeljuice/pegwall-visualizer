@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@react-three/drei';
+import { TextureLoader } from 'three';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import BaseFurnitureItem from './BaseFurnitureItem';
 
@@ -20,71 +21,74 @@ interface MagazineRackProps {
 const MagazineRack: React.FC<MagazineRackProps> = (props) => {
   const { item } = props;
   const { width, height, depth } = item.dimensions;
-  const wallThickness = 0.083; // 1 inch = 0.083 feet
+
+  // Load wooden texture
+  const woodenTexture = useMemo(() => {
+    const loader = new TextureLoader();
+    return loader.load('/images/wooden-texture.jpg');
+  }, []);
 
   return (
     <BaseFurnitureItem {...props}>
-      {/* Bottom wall */}
+      {/* Bottom panel */}
       <Box
-        args={[width, wallThickness, depth]}
-        position={[width / 2, wallThickness / 2, 0]}
+        args={[width, 0.083, depth]}
+        position={[width / 2, 0.0415, 0]}
       >
         <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
+          map={woodenTexture}
           roughness={0.7}
           metalness={0.1}
         />
       </Box>
 
-      {/* Left wall */}
+      {/* Left side panel */}
       <Box
-        args={[wallThickness, height, depth]}
-        position={[wallThickness / 2, height / 2, 0]}
+        args={[0.083, height, depth]}
+        position={[0.0415, height / 2, 0]}
       >
         <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
+          map={woodenTexture}
           roughness={0.7}
           metalness={0.1}
         />
       </Box>
 
-      {/* Right wall */}
+      {/* Right side panel */}
       <Box
-        args={[wallThickness, height, depth]}
-        position={[width - wallThickness / 2, height / 2, 0]}
+        args={[0.083, height, depth]}
+        position={[width - 0.0415, height / 2, 0]}
       >
         <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
+          map={woodenTexture}
           roughness={0.7}
           metalness={0.1}
         />
       </Box>
 
-      {/* Back wall */}
+      {/* Back panel */}
       <Box
-        args={[width, height, wallThickness]}
-        position={[width / 2, height / 2, -depth / 2 + wallThickness / 2]}
+        args={[width, height, 0.083]}
+        position={[width / 2, height / 2, -depth / 2 + 0.0415]}
       >
         <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
+          map={woodenTexture}
           roughness={0.7}
           metalness={0.1}
         />
       </Box>
 
-      {/* Front panel - hides the contents */}
+      {/* Front panel */}
       <Box
-        args={[width, height, wallThickness]}
-        position={[width / 2, height / 2, depth / 2 - wallThickness / 2]}
+        args={[width, height, 0.083]}
+        position={[width / 2, height / 2, depth / 2 - 0.0415]}
       >
         <meshStandardMaterial
-          color="#F5F5DC" // Plywood color
+          map={woodenTexture}
           roughness={0.7}
           metalness={0.1}
         />
       </Box>
-
-      {/* No top wall - this creates the open-top box for magazines */}
     </BaseFurnitureItem>
   );
 };
