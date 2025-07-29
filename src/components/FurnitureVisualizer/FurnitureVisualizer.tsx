@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import Wall from '../Wall/Wall';
 import Cubby10x10 from '../FurnitureItem/Cubby10x10';
 import Cubby20x10 from '../FurnitureItem/Cubby20x10';
+import Hook from '../FurnitureItem/Hook';
 import FurniturePanel from '../FurniturePanel/FurniturePanel';
 import WallDimensionsForm from '../WallDimensionsForm/WallDimensionsForm';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
@@ -225,6 +226,22 @@ const FurnitureVisualizer: React.FC = () => {
               );
             }
             
+            if (item.name === 'Hook') {
+              return (
+                <Hook
+                  key={item.id}
+                  item={item}
+                  isSelected={selectedItemId === item.id}
+                  onSelect={() => handleSelectItem(item.id)}
+                  onMove={handleMoveItem}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  wallDimensions={wallDimensions}
+                  placedItems={placedItems}
+                />
+              );
+            }
+            
             // Fallback - shouldn't happen with current items
             return null;
           })}
@@ -251,13 +268,15 @@ const FurnitureVisualizer: React.FC = () => {
             45° View
           </button>
         </div>
-      </div>
 
-      {/* Wall Dimensions Form */}
-      <WallDimensionsForm
-        dimensions={wallDimensions}
-        onChange={handleWallDimensionsChange}
-      />
+        {/* Wall Dimensions Form */}
+        <div className={styles.wallDimensionsContainer}>
+          <WallDimensionsForm
+            dimensions={wallDimensions}
+            onChange={handleWallDimensionsChange}
+          />
+        </div>
+      </div>
 
       {/* Furniture Panel */}
       <FurniturePanel

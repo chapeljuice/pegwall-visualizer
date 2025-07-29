@@ -1,11 +1,11 @@
-import React, { useRef, useState, useCallback, useEffect, ReactNode } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
+import { Box, Html } from '@react-three/drei';
 import { Mesh, Vector3, Vector2, Raycaster, Plane } from 'three';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import styles from './FurnitureItem.module.css';
 
-interface BaseFurnitureItemProps {
+interface HookProps {
   item: FurnitureItemType;
   isSelected: boolean;
   onSelect: () => void;
@@ -17,16 +17,15 @@ interface BaseFurnitureItemProps {
     height: number; // in feet
   };
   placedItems?: FurnitureItemType[]; // All placed items for collision detection
-  children: ReactNode; // The visual representation of the furniture
-  showLabel?: boolean; // Whether to show the item label
 }
 
 // Grid constants (in Three.js units - 1 unit = 1 foot)
 const GRID_HORIZONTAL_SPACING = 0.67; // 8 inches = 0.67 feet
 const GRID_VERTICAL_SPACING = 0.5;   // 6 inches = 0.5 feet
 const WALL_POSITION = -2; // Z position of the wall
+const VERTICAL_OFFSET = 0.25; // 3 inches above peg holes
 
-const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
+const Hook: React.FC<HookProps> = ({
   item,
   isSelected,
   onSelect,
@@ -35,8 +34,6 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
   onDragEnd,
   wallDimensions = { width: 8, height: 8 }, // Default to 8x8 feet
   placedItems = [], // Default to empty array
-  children,
-  showLabel = true,
 }) => {
   const meshRef = useRef<Mesh>(null);
   const { camera, gl } = useThree();
@@ -96,10 +93,9 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
     });
   };
 
-  // Function to snap position to grid
+  // Function to snap position to grid (custom for Hook)
   const snapToGrid = useCallback((position: Vector3): [number, number, number] => {
-    // Calculate the grid position that the furniture should snap to
-    // The furniture should align its top-left corner with the peg hole positions
+    // Calculate the grid position that the hook should snap to
     const wallWidth = wallDimensions.width;
     const wallHeight = wallDimensions.height;
     
@@ -122,48 +118,40 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
     }
 
     // Find the closest grid position
-    // The furniture should align its left edge with the left edge of the first peg hole
-    // and its right edge with the right edge of the last peg hole it covers
+    // The hook should align its left edge with the left edge of the first peg hole, but 3" above
     const pegHoleWidth = 0.083; // 1 inch
     const pegHoleHeight = 0.25; // 3 inches
     
     let closestX = horizontalPositions[0] - pegHoleWidth / 2;
-    let closestY = verticalPositions[0] - pegHoleHeight / 2;
+    let closestY = verticalPositions[0] - pegHoleHeight / 2 + VERTICAL_OFFSET;
     let minDistance = Infinity;
 
-          for (const x of horizontalPositions) {
-        for (const y of verticalPositions) {
-          // Calculate the left edge of the first peg hole
-          const firstPegHoleLeft = x - pegHoleWidth / 2;
-          const pegHoleTopLeftY = y - pegHoleHeight / 2;
-          
-          // Use the furniture's pegHolesToSpan property or default to 1
-          const pegHolesToSpan = item.pegHolesToSpan || 1;
-          
-          // Calculate the right edge position to ensure it covers the last peg hole
-          const lastPegHoleIndex = horizontalPositions.indexOf(x) + pegHolesToSpan - 1;
-          if (lastPegHoleIndex < horizontalPositions.length) {
-            const lastPegHoleX = horizontalPositions[lastPegHoleIndex];
-            const lastPegHoleRight = lastPegHoleX + pegHoleWidth / 2;
-            
-            // Position furniture so its right edge aligns with the right edge of the last peg hole
-            const furnitureX = lastPegHoleRight - width;
-            const furnitureY = pegHoleTopLeftY;
-            
-            const distance = Math.sqrt((position.x - furnitureX) ** 2 + (position.y - furnitureY) ** 2);
-            if (distance < minDistance) {
-              minDistance = distance;
-              closestX = furnitureX;
-              closestY = furnitureY;
-            }
-          }
+    for (const x of horizontalPositions) {
+      for (const y of verticalPositions) {
+        // Use the furniture's pegHolesToSpan property or default to 1
+        const pegHolesToSpan = item.pegHolesToSpan || 1;
+        
+        // Calculate the left edge of the first peg hole, but 3" above
+        const firstPegHoleLeft = x - pegHoleWidth / 2;
+        const pegHoleTopLeftY = y - pegHoleHeight / 2 + VERTICAL_OFFSET;
+        
+        // Position hook so its left edge aligns with the left edge of the first peg hole
+        const hookX = firstPegHoleLeft;
+        const hookY = pegHoleTopLeftY;
+        
+        const distance = Math.sqrt((position.x - hookX) ** 2 + (position.y - hookY) ** 2);
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestX = hookX;
+          closestY = hookY;
+        }
       }
     }
 
     return [closestX, closestY, WALL_POSITION];
   }, [wallDimensions, GRID_HORIZONTAL_SPACING, GRID_VERTICAL_SPACING]);
 
-  // Function to constrain position within wall boundaries
+  // Function to constrain position within wall boundaries (custom for Hook)
   const constrainToWall = useCallback((position: [number, number, number]): [number, number, number] => {
     const [x, y, z] = position;
     
@@ -185,13 +173,13 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
       verticalPositions.push(Number(gridY.toFixed(2)));
     }
 
-    // Find the closest valid grid position that keeps the furniture within bounds
-    // The furniture should align its right edge with the right edge of the last peg hole it covers
+    // Find the closest valid grid position that keeps the hook within bounds
+    // The hook should align its left edge with the left edge of the first peg hole, but 3" above
     const pegHoleWidth = 0.083; // 1 inch
     const pegHoleHeight = 0.25; // 3 inches
     
     let closestX = horizontalPositions[0] - pegHoleWidth / 2;
-    let closestY = verticalPositions[0] - pegHoleHeight / 2;
+    let closestY = verticalPositions[0] - pegHoleHeight / 2 + VERTICAL_OFFSET;
     let minDistance = Infinity;
 
     for (const gridX of horizontalPositions) {
@@ -199,29 +187,26 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
         // Use the furniture's pegHolesToSpan property or default to 1
         const pegHolesToSpan = item.pegHolesToSpan || 1;
         
-        // Calculate the right edge position to ensure it covers the last peg hole
-        const lastPegHoleIndex = horizontalPositions.indexOf(gridX) + pegHolesToSpan - 1;
-        if (lastPegHoleIndex < horizontalPositions.length) {
-          const lastPegHoleX = horizontalPositions[lastPegHoleIndex];
-          const lastPegHoleRight = lastPegHoleX + pegHoleWidth / 2;
-          
-          // Position furniture so its right edge aligns with the right edge of the last peg hole
-          const furnitureX = lastPegHoleRight - width;
-          const furnitureY = gridY - pegHoleHeight / 2;
-          
-          // Check if this position would keep the furniture within wall boundaries
-          if (
-            furnitureX >= WALL_LEFT + GRID_HORIZONTAL_SPACING &&
-            furnitureX + width <= WALL_RIGHT - GRID_HORIZONTAL_SPACING &&
-            furnitureY >= WALL_BOTTOM + GRID_VERTICAL_SPACING &&
-            furnitureY + height <= WALL_TOP - GRID_VERTICAL_SPACING
-          ) {
-            const distance = Math.sqrt((x - furnitureX) ** 2 + (y - furnitureY) ** 2);
-            if (distance < minDistance) {
-              minDistance = distance;
-              closestX = furnitureX;
-              closestY = furnitureY;
-            }
+        // Calculate the left edge of the first peg hole, but 3" above
+        const firstPegHoleLeft = gridX - pegHoleWidth / 2;
+        const pegHoleTopLeftY = gridY - pegHoleHeight / 2 + VERTICAL_OFFSET;
+        
+        // Position hook so its left edge aligns with the left edge of the first peg hole
+        const hookX = firstPegHoleLeft;
+        const hookY = pegHoleTopLeftY;
+        
+        // Check if this position would keep the hook within wall boundaries
+        if (
+          hookX >= WALL_LEFT + GRID_HORIZONTAL_SPACING &&
+          hookX + width <= WALL_RIGHT - GRID_HORIZONTAL_SPACING &&
+          hookY >= WALL_BOTTOM + GRID_VERTICAL_SPACING &&
+          hookY + height <= WALL_TOP - GRID_VERTICAL_SPACING
+        ) {
+          const distance = Math.sqrt((x - hookX) ** 2 + (y - hookY) ** 2);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestX = hookX;
+            closestY = hookY;
           }
         }
       }
@@ -333,13 +318,35 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
 
   return (
     <group position={[x, y, z]}>
-      {/* The visual representation of the furniture */}
+      {/* The visual representation of the hook */}
       <group onPointerDown={handlePointerDown}>
-        {children}
+        {/* Main hook body */}
+        <Box
+          args={[width, height, depth]}
+          position={[width / 2, height / 2, depth / 2]}
+        >
+          <meshStandardMaterial
+            color={item.color}
+            roughness={0.8}
+            metalness={0.0}
+          />
+        </Box>
+
+        {/* Hook curve at the top */}
+        <Box
+          args={[width * 3, width, depth]}
+          position={[width / 2, height - width / 2, depth / 2]}
+        >
+          <meshStandardMaterial
+            color={item.color}
+            roughness={0.8}
+            metalness={0.0}
+          />
+        </Box>
       </group>
       
-      {/* Black stroke around furniture */}
-      <group position={[width / 2, height / 2, 0]}>
+      {/* Black stroke around hook */}
+      <group position={[width / 2, height / 2, depth / 2]}>
         <mesh>
           <boxGeometry args={[width + 0.02, height + 0.02, depth + 0.02]} />
           <meshStandardMaterial
@@ -382,21 +389,19 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
       )}
       
       {/* Item label */}
-      {showLabel && (
-        <Html
-          position={[width / 2, height + 0.3, 0]}
-          center
-          distanceFactor={10}
-          occlude
-        >
-          <div className={styles.label}>
-            <span className={styles.name}>{item.name}</span>
-            <span className={styles.price}>${item.price}</span>
-          </div>
-        </Html>
-      )}
+      <Html
+        position={[width / 2, height + 0.3, 0]}
+        center
+        distanceFactor={10}
+        occlude
+      >
+        <div className={styles.label}>
+          <span className={styles.name}>{item.name}</span>
+          <span className={styles.price}>${item.price}</span>
+        </div>
+      </Html>
     </group>
   );
 };
 
-export default BaseFurnitureItem; 
+export default Hook; 

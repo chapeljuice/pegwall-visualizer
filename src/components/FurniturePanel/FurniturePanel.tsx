@@ -25,20 +25,33 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
       name: 'Cubby - 10" x 10"',
       type: 'storage',
       dimensions: { width: 0.83, height: 0.83, depth: 0.83 }, // 10" x 10" x 10" in feet
-      color: '#8B4513',
+      color: '#F5F5DC',
       material: 'plywood',
       price: 79,
       position: [0, 0, 0],
+      pegHolesToSpan: 2, // Spans 2 peg holes (8" + 2" = 10")
     },
     {
       id: 'cubby-2',
       name: 'Cubby - 20" x 10"',
       type: 'storage',
       dimensions: { width: 1.67, height: 0.83, depth: 0.83 }, // 20" x 10" x 10" in feet
-      color: '#8B4513',
+      color: '#F5F5DC',
       material: 'plywood',
       price: 129,
       position: [0, 0, 0],
+      pegHolesToSpan: 3, // Spans 3 peg holes (8" + 8" + 4" = 20")
+    },
+    {
+      id: 'hook-1',
+      name: 'Hook',
+      type: 'hook',
+      dimensions: { width: 0.083, height: 0.67, depth: 0.42 }, // 1" x 8" x 5" in feet
+      color: '#F5F5DC',
+      material: 'plywood',
+      price: 19,
+      position: [0, 0, 0],
+      pegHolesToSpan: 1, // Spans 1 peg hole (1" wide)
     },
   ];
 

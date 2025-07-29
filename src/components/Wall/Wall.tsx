@@ -50,46 +50,11 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
         rotation={[0, 0, 0]}
       >
         <meshStandardMaterial
-          color="#F5DEB3" // Light tan plywood color
-          roughness={0.8}
-          metalness={0.1}
+          color="#FFF3E0" // Much lighter off-white color
+          roughness={0.2}
+          metalness={0}
         />
       </Plane>
-
-      {/* Grid lines */}
-      <group>
-        {/* Horizontal grid lines */}
-        {verticalPositions.map((y) => (
-          <Plane
-            key={`h-${y}`}
-            args={[wallWidth, 0.01]}
-            position={[0, y, WALL_POSITION + 0.001]}
-            rotation={[0, 0, 0]}
-          >
-            <meshStandardMaterial
-              color="#8B4513"
-              transparent
-              opacity={0.3}
-            />
-          </Plane>
-        ))}
-
-        {/* Vertical grid lines */}
-        {horizontalPositions.map((x) => (
-          <Plane
-            key={`v-${x}`}
-            args={[0.01, wallHeight]}
-            position={[x, wallHeight / 2, WALL_POSITION + 0.001]}
-            rotation={[0, 0, 0]}
-          >
-            <meshStandardMaterial
-              color="#8B4513"
-              transparent
-              opacity={0.3}
-            />
-          </Plane>
-        ))}
-      </group>
 
       {/* Peg holes */}
       <group>
@@ -118,7 +83,7 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
         rotation={[0, Math.PI / 2, 0]}
       >
         <meshStandardMaterial
-          color="#D2B48C"
+          color="#FFF3E0"
           transparent
           opacity={0.4}
           roughness={0.7}
