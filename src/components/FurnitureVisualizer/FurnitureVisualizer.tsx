@@ -6,6 +6,7 @@ import Cubby10x10 from '../FurnitureItem/Cubby10x10';
 import Cubby20x10 from '../FurnitureItem/Cubby20x10';
 import Hook from '../FurnitureItem/Hook';
 import Table from '../FurnitureItem/Table';
+import MagazineRack from '../FurnitureItem/MagazineRack';
 import FurniturePanel from '../FurniturePanel/FurniturePanel';
 import WallDimensionsForm from '../WallDimensionsForm/WallDimensionsForm';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
@@ -277,8 +278,26 @@ const FurnitureVisualizer: React.FC = () => {
             }
             
             if (item.name.includes('Table')) {
+              console.log('Rendering as Table');
               return (
                 <Table
+                  key={item.id}
+                  item={item}
+                  isSelected={selectedItemId === item.id}
+                  onSelect={() => handleSelectItem(item.id)}
+                  onMove={handleMoveItem}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  wallDimensions={wallDimensions}
+                  placedItems={placedItems}
+                />
+              );
+            }
+            
+            if (item.name.includes('Magazine Rack')) {
+              console.log('Rendering as MagazineRack');
+              return (
+                <MagazineRack
                   key={item.id}
                   item={item}
                   isSelected={selectedItemId === item.id}

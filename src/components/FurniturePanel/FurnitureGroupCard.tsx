@@ -44,6 +44,16 @@ const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
     onSharedColorChange(color); // Update the shared color state
   };
 
+  // Function to format currency with commas
+  const formatCurrency = (amount: number): string => {
+    return amount.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+  };
+
   const totalPrice = group.basePrice + selectedVariant.price + selectedColor.price;
 
   return (
@@ -66,7 +76,7 @@ const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
           <h3>{group.name}</h3>
           <p className={styles.description}>{group.description}</p>
           <p className={styles.material}>{group.material}</p>
-          <p className={styles.price}>Starting at ${group.basePrice}</p>
+          <p className={styles.price}>Starting at {formatCurrency(group.basePrice)}</p>
         </div>
         <div className={styles.expandIcon}>
           {isExpanded ? '−' : '+'}
@@ -77,20 +87,29 @@ const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
         <div className={styles.customizationPanel}>
           <div className={styles.customizationSection}>
             <h4>Size Options</h4>
-            <div className={styles.variantGrid}>
-              {group.variants.map((variant) => (
-                <button
-                  key={variant.id}
-                  className={`${styles.variantOption} ${
-                    selectedVariant.id === variant.id ? styles.selected : ''
-                  }`}
-                  onClick={() => setSelectedVariant(variant)}
-                >
-                  <span className={styles.variantName}>{variant.name}</span>
-                  <span className={styles.variantPrice}>+${variant.price}</span>
-                </button>
-              ))}
-            </div>
+            {group.variants.length === 1 ? (
+              <div className={styles.oneSizeDisplay}>
+                <span className={styles.oneSizeLabel}>One Size</span>
+                <span className={styles.oneSizeDimensions}>
+                  {Math.round(selectedVariant.dimensions.width * 12)}" × {Math.round(selectedVariant.dimensions.height * 12)}" × {Math.round(selectedVariant.dimensions.depth * 12)}"
+                </span>
+              </div>
+            ) : (
+              <div className={styles.variantGrid}>
+                {group.variants.map((variant) => (
+                  <button
+                    key={variant.id}
+                    className={`${styles.variantOption} ${
+                      selectedVariant.id === variant.id ? styles.selected : ''
+                    }`}
+                    onClick={() => setSelectedVariant(variant)}
+                  >
+                    <span className={styles.variantName}>{variant.name}</span>
+                    <span className={styles.variantPrice}>+{formatCurrency(variant.price)}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className={styles.customizationSection}>
@@ -119,7 +138,7 @@ const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
               <span>Selected: {selectedVariant.name} in {selectedColor.name}</span>
             </div>
             <div className={styles.priceAndButton}>
-              <span className={styles.totalPrice}>${totalPrice}</span>
+              <span className={styles.totalPrice}>{formatCurrency(totalPrice)}</span>
               <button
                 className={styles.addToWallButton}
                 onClick={handlePlaceItem}

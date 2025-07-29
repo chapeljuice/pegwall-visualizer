@@ -119,6 +119,34 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
       ],
       colors: SHARED_COLORS,
     },
+    {
+      id: 'magazine-rack',
+      name: 'Magazine Rack',
+      description: 'A shallow niche for magazines, mail, pamphlets, et cetera.',
+      type: 'storage',
+      material: 'plywood',
+      basePrice: 95,
+      imagePath: '/images/products/magazine-rack.jpg',
+      variants: [
+        {
+          id: '2-slot',
+          name: '2 Slot',
+          dimensions: { width: 0.67, height: 0.67, depth: 0.5 }, // 8" × 10" × 6" in feet
+          price: 0,
+          pegHolesToSpan: 2,
+        },
+        {
+          id: '3-slot',
+          name: '3 Slot',
+          dimensions: { width: 1.33, height: 0.67, depth: 0.5 }, // 16" × 10" × 6" in feet
+          price: 60,
+          pegHolesToSpan: 3,
+        },
+      ],
+      colors: [
+        { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
+      ],
+    },
   ];
 
   const totalPrice = placedItems.reduce((sum, item) => sum + item.price, 0);
@@ -131,6 +159,8 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
       return '/images/products/hook.jpg';
     } else if (itemName.includes('Table')) {
       return '/images/products/table.jpg';
+    } else if (itemName.includes('Magazine Rack')) {
+      return '/images/products/cubby-10x10.jpg'; // Using cubby image as placeholder
     }
     return '/images/products/cubby-10x10.jpg'; // Default fallback
   };
@@ -139,6 +169,16 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
   const getColorName = (hexCode: string): string => {
     const color = SHARED_COLORS.find(c => c.hexCode === hexCode);
     return color ? color.name : 'Unknown Color';
+  };
+
+  // Function to format currency with commas
+  const formatCurrency = (amount: number): string => {
+    return amount.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
   };
 
   return (
@@ -213,7 +253,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
                         />
                         <span>{getColorName(item.color)}</span>
                       </div>
-                      <p>${item.price}</p>
+                      <p>{formatCurrency(item.price)}</p>
                     </div>
                     <button
                       className={styles.removeButton}
@@ -227,7 +267,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
                   </div>
                 ))}
                 <div className={styles.totalPrice}>
-                  <strong>Total: ${totalPrice}</strong>
+                  <strong>Total: {formatCurrency(totalPrice)}</strong>
                 </div>
                 <button
                   className={styles.clearWallButton}
