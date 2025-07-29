@@ -178,6 +178,25 @@
   font-weight: 600;
 }
 
+.itemColor {
+  color: #666 !important;
+  font-weight: 400 !important;
+  font-style: italic;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0;
+}
+
+.colorSwatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
 .removeButton {
   background: #ff4444;
   color: white;

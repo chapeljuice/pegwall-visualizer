@@ -29,13 +29,25 @@ const Table: React.FC<TableProps> = (props) => {
 
   return (
     <BaseFurnitureItem {...props}>
-      {/* Table top */}
+      {/* Table top - thin colored layer (like paint) */}
       <Box
-        args={[width, tableTopThickness, depth]}
-        position={[width / 2, height - tableTopThickness / 2, 0]}
+        args={[width, 0.01, depth]} // Very thin layer (0.01 feet = ~1/8 inch)
+        position={[width / 2, height - 0.005, 0]} // Positioned at the very top
       >
         <meshStandardMaterial
           color={item.color}
+          roughness={0.7}
+          metalness={0.1}
+        />
+      </Box>
+
+      {/* Table top base - plywood color underneath the paint */}
+      <Box
+        args={[width, tableTopThickness - 0.01, depth]} // Remaining thickness minus paint layer
+        position={[width / 2, height - tableTopThickness / 2 - 0.005, 0]}
+      >
+        <meshStandardMaterial
+          color="#F5F5DC" // Plywood color
           roughness={0.7}
           metalness={0.1}
         />
@@ -47,7 +59,7 @@ const Table: React.FC<TableProps> = (props) => {
         position={[legWidth / 2, legHeight / 2, depth / 2 - legDepth / 2]}
       >
         <meshStandardMaterial
-          color={item.color}
+          color="#F5F5DC" // Plywood color
           roughness={0.7}
           metalness={0.1}
         />
@@ -59,7 +71,7 @@ const Table: React.FC<TableProps> = (props) => {
         position={[width - legWidth / 2, legHeight / 2, depth / 2 - legDepth / 2]}
       >
         <meshStandardMaterial
-          color={item.color}
+          color="#F5F5DC" // Plywood color
           roughness={0.7}
           metalness={0.1}
         />
@@ -71,7 +83,7 @@ const Table: React.FC<TableProps> = (props) => {
         position={[width / 2, legHeight / 2, -depth / 2 + legDepth / 2]}
       >
         <meshStandardMaterial
-          color={item.color}
+          color="#F5F5DC" // Plywood color
           roughness={0.7}
           metalness={0.1}
         />

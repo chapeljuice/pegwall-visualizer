@@ -1,19 +1,28 @@
 import React, { useState } from 'react';
-import { FurnitureGroup, FurnitureItem } from '../../types/furniture';
+import { FurnitureGroup, FurnitureItem, FurnitureColor } from '../../types/furniture';
 import styles from './FurniturePanel.module.css';
 
 interface FurnitureGroupCardProps {
   group: FurnitureGroup;
   onPlaceItem: (item: FurnitureItem) => void;
+  sharedSelectedColor: FurnitureColor;
+  onSharedColorChange: (color: FurnitureColor) => void;
 }
 
 const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
   group,
   onPlaceItem,
+  sharedSelectedColor,
+  onSharedColorChange,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(group.variants[0]);
-  const [selectedColor, setSelectedColor] = useState(group.colors[0]);
+  const [selectedColor, setSelectedColor] = useState(sharedSelectedColor);
+
+  // Update local selected color when shared color changes
+  React.useEffect(() => {
+    setSelectedColor(sharedSelectedColor);
+  }, [sharedSelectedColor]);
 
   const handlePlaceItem = () => {
     const item: FurnitureItem = {
@@ -28,6 +37,11 @@ const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
       pegHolesToSpan: selectedVariant.pegHolesToSpan,
     };
     onPlaceItem(item);
+  };
+
+  const handleColorChange = (color: FurnitureColor) => {
+    setSelectedColor(color);
+    onSharedColorChange(color); // Update the shared color state
   };
 
   const totalPrice = group.basePrice + selectedVariant.price + selectedColor.price;
@@ -88,7 +102,7 @@ const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
                   className={`${styles.colorOption} ${
                     selectedColor.id === color.id ? styles.selected : ''
                   }`}
-                  onClick={() => setSelectedColor(color)}
+                  onClick={() => handleColorChange(color)}
                   style={{ backgroundColor: color.hexCode }}
                   title={color.name}
                 >

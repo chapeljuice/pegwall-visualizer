@@ -56,4 +56,26 @@ export interface WallDimensions {
   width: number;
   height: number;
   depth: number;
-} 
+}
+
+// Shared color configuration
+export const SHARED_COLORS: FurnitureColor[] = [
+  { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
+  { id: 'white', name: 'White', hexCode: '#FFFFFF', price: 0 },
+  { id: 'poppy', name: 'Poppy', hexCode: '#FA623B', price: 0 },
+  { id: 'sky', name: 'Sky', hexCode: '#74B9FF', price: 0 },
+  { id: 'space', name: 'Space', hexCode: '#2D3436', price: 0 },
+  { id: 'ochre', name: 'Ochre', hexCode: '#FDCB6E', price: 0 },
+  { id: 'charcoal', name: 'Charcoal', hexCode: '#636E72', price: 0 },
+  { id: 'ash', name: 'Ash', hexCode: '#B2BEC3', price: 0 },
+  { id: 'dove', name: 'Dove', hexCode: '#DFE6E9', price: 0 },
+  { id: 'tangerine', name: 'Tangerine', hexCode: '#FF8A65', price: 0 },
+  { id: 'sienna', name: 'Sienna', hexCode: '#D63031', price: 0 },
+  { id: 'rust', name: 'Rust', hexCode: '#E17055', price: 0 },
+  { id: 'night', name: 'Night', hexCode: '#2D3436', price: 0 },
+  { id: 'mint', name: 'Mint', hexCode: '#00B894', price: 0 },
+  { id: 'pear', name: 'Pear', hexCode: '#A29BFE', price: 0 },
+  { id: 'sage', name: 'Sage', hexCode: '#6C5CE7', price: 0 },
+  { id: 'kiwi', name: 'Kiwi', hexCode: '#00CEA9', price: 0 },
+  { id: 'avocado', name: 'Avocado', hexCode: '#55A3FF', price: 0 },
+]; 

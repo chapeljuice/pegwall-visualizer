@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FurnitureItem as FurnitureItemType, FurnitureGroup } from '../../types/furniture';
+import { FurnitureItem as FurnitureItemType, FurnitureGroup, SHARED_COLORS } from '../../types/furniture';
 import FurnitureGroupCard from './FurnitureGroupCard';
 import styles from './FurniturePanel.module.css';
 
@@ -21,6 +21,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
   onClearWall,
 }) => {
   const [activeTab, setActiveTab] = useState<'available' | 'placed'>('available');
+  const [sharedSelectedColor, setSharedSelectedColor] = useState(SHARED_COLORS[0]); // Default to first color
 
   // Sample furniture groups - you can expand this with your 6 cubby sizes and 18 colors
   const furnitureGroups: FurnitureGroup[] = [
@@ -76,26 +77,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
           pegHolesToSpan: 4,
         },
       ],
-      colors: [
-        { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
-        { id: 'walnut', name: 'Walnut', hexCode: '#8B4513', price: 20 },
-        { id: 'oak', name: 'Oak', hexCode: '#D2691E', price: 15 },
-        { id: 'maple', name: 'Maple', hexCode: '#F4A460', price: 10 },
-        { id: 'cherry', name: 'Cherry', hexCode: '#CD5C5C', price: 25 },
-        { id: 'mahogany', name: 'Mahogany', hexCode: '#8B0000', price: 30 },
-        { id: 'white', name: 'White', hexCode: '#FFFFFF', price: 5 },
-        { id: 'black', name: 'Black', hexCode: '#2F2F2F', price: 15 },
-        { id: 'gray', name: 'Gray', hexCode: '#808080', price: 8 },
-        { id: 'navy', name: 'Navy', hexCode: '#000080', price: 12 },
-        { id: 'forest-green', name: 'Forest Green', hexCode: '#228B22', price: 12 },
-        { id: 'burgundy', name: 'Burgundy', hexCode: '#800020', price: 18 },
-        { id: 'sage', name: 'Sage', hexCode: '#9CAF88', price: 10 },
-        { id: 'cream', name: 'Cream', hexCode: '#F5F5DC', price: 5 },
-        { id: 'espresso', name: 'Espresso', hexCode: '#3E2723', price: 20 },
-        { id: 'driftwood', name: 'Driftwood', hexCode: '#D2B48C', price: 15 },
-        { id: 'charcoal', name: 'Charcoal', hexCode: '#36454F', price: 18 },
-        { id: 'warm-white', name: 'Warm White', hexCode: '#FDF5E6', price: 5 },
-      ],
+      colors: SHARED_COLORS,
     },
     {
       id: 'hook',
@@ -135,26 +117,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
           pegHolesToSpan: 4,
         },
       ],
-      colors: [
-        { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
-        { id: 'walnut', name: 'Walnut', hexCode: '#8B4513', price: 20 },
-        { id: 'oak', name: 'Oak', hexCode: '#D2691E', price: 15 },
-        { id: 'maple', name: 'Maple', hexCode: '#F4A460', price: 10 },
-        { id: 'cherry', name: 'Cherry', hexCode: '#CD5C5C', price: 25 },
-        { id: 'mahogany', name: 'Mahogany', hexCode: '#8B0000', price: 30 },
-        { id: 'white', name: 'White', hexCode: '#FFFFFF', price: 5 },
-        { id: 'black', name: 'Black', hexCode: '#2F2F2F', price: 15 },
-        { id: 'gray', name: 'Gray', hexCode: '#808080', price: 8 },
-        { id: 'navy', name: 'Navy', hexCode: '#000080', price: 12 },
-        { id: 'forest-green', name: 'Forest Green', hexCode: '#228B22', price: 12 },
-        { id: 'burgundy', name: 'Burgundy', hexCode: '#800020', price: 18 },
-        { id: 'sage', name: 'Sage', hexCode: '#9CAF88', price: 10 },
-        { id: 'cream', name: 'Cream', hexCode: '#F5F5DC', price: 5 },
-        { id: 'espresso', name: 'Espresso', hexCode: '#3E2723', price: 20 },
-        { id: 'driftwood', name: 'Driftwood', hexCode: '#D2B48C', price: 15 },
-        { id: 'charcoal', name: 'Charcoal', hexCode: '#36454F', price: 18 },
-        { id: 'warm-white', name: 'Warm White', hexCode: '#FDF5E6', price: 5 },
-      ],
+      colors: SHARED_COLORS,
     },
   ];
 
@@ -170,6 +133,12 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
       return '/images/products/table.jpg';
     }
     return '/images/products/cubby-10x10.jpg'; // Default fallback
+  };
+
+  // Function to get color name from hex code
+  const getColorName = (hexCode: string): string => {
+    const color = SHARED_COLORS.find(c => c.hexCode === hexCode);
+    return color ? color.name : 'Unknown Color';
   };
 
   return (
@@ -204,6 +173,8 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
                 key={group.id}
                 group={group}
                 onPlaceItem={onPlaceItem}
+                sharedSelectedColor={sharedSelectedColor}
+                onSharedColorChange={setSharedSelectedColor}
               />
             ))}
           </div>
@@ -235,6 +206,13 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
                     />
                     <div className={styles.itemInfo}>
                       <h4>{item.name}</h4>
+                      <div className={styles.itemColor}>
+                        <span 
+                          className={styles.colorSwatch}
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span>{getColorName(item.color)}</span>
+                      </div>
                       <p>${item.price}</p>
                     </div>
                     <button
