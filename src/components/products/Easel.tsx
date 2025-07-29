@@ -50,10 +50,10 @@ const Easel: React.FC<EaselProps> = ({
       placedItems={placedItems}
       showLabel={showLabel}
     >
-      {/* Main easel structure */}
+      {/* Main easel structure - simple rectangular shape */}
       <group>
         {/* Back panel (wooden texture) */}
-        <Box args={[width, height, 0.05]} position={[0, 0, -depth/2 + 0.025]}>
+        <Box args={[width, height, 0.05]} position={[width/2, height/2, -depth/2 + 0.025]}>
           <meshStandardMaterial
             map={woodenTexture}
             roughness={0.7}
@@ -61,8 +61,8 @@ const Easel: React.FC<EaselProps> = ({
           />
         </Box>
         
-        {/* Angled front panel (colored) - angled at 10 degrees forward */}
-        <group rotation={[-0.175, 0, 0]} position={[0, 0, depth/2 - 0.025]}>
+        {/* Angled front panel (colored) - angled at 10 degrees upward */}
+        <group rotation={[-0.175, 0, 0]} position={[width/2, height/2, depth/2 - 0.025]}>
           <Box args={[width, height, 0.05]} position={[0, 0, 0]}>
             <meshStandardMaterial
               color={item.color}
@@ -72,15 +72,8 @@ const Easel: React.FC<EaselProps> = ({
           </Box>
         </group>
         
-        {/* Side supports (wooden texture) */}
-        <Box args={[0.05, height, depth]} position={[-width/2 + 0.025, 0, 0]}>
-          <meshStandardMaterial
-            map={woodenTexture}
-            roughness={0.7}
-            metalness={0.1}
-          />
-        </Box>
-        <Box args={[0.05, height, depth]} position={[width/2 - 0.025, 0, 0]}>
+        {/* Left side panel (wooden texture) - part of main structure */}
+        <Box args={[0.05, height, depth]} position={[0.025, height/2, 0]}>
           <meshStandardMaterial
             map={woodenTexture}
             roughness={0.7}
@@ -88,8 +81,17 @@ const Easel: React.FC<EaselProps> = ({
           />
         </Box>
         
-        {/* Bottom support (wooden texture) */}
-        <Box args={[width, 0.05, depth]} position={[0, -height/2 + 0.025, 0]}>
+        {/* Right side panel (wooden texture) - part of main structure */}
+        <Box args={[0.05, height, depth]} position={[width - 0.025, height/2, 0]}>
+          <meshStandardMaterial
+            map={woodenTexture}
+            roughness={0.7}
+            metalness={0.1}
+          />
+        </Box>
+        
+        {/* Bottom panel (wooden texture) */}
+        <Box args={[width, 0.05, depth]} position={[width/2, 0.025, 0]}>
           <meshStandardMaterial
             map={woodenTexture}
             roughness={0.7}

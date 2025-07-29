@@ -339,11 +339,11 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
         {children}
       </group>
       
-      {/* Selection indicator */}
+      {/* Selection indicator - positioned at center to match furniture bounds */}
       {isSelected && (
         <group position={[width / 2, height / 2, 0]}>
           <mesh>
-            <boxGeometry args={[width + 0.05, height + 0.05, depth + 0.05]} />
+            <boxGeometry args={[width, height, depth]} />
             <meshStandardMaterial
               color="#00ff00"
               transparent
@@ -354,11 +354,11 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
         </group>
       )}
       
-      {/* Overlap indicator (red glow when overlapping) */}
+      {/* Overlap indicator (red glow when overlapping) - positioned at center to match furniture bounds */}
       {isOverlapping && (
         <group position={[width / 2, height / 2, 0]}>
           <mesh>
-            <boxGeometry args={[width + 0.1, height + 0.1, depth + 0.1]} />
+            <boxGeometry args={[width, height, depth]} />
             <meshStandardMaterial
               color="#ff0000"
               transparent

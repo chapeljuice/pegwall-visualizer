@@ -196,6 +196,172 @@ const FurnitureVisualizer: React.FC = () => {
     setSelectedItemId(null);
   };
 
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const formatCurrency = (amount: number): string => {
+      return amount.toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      });
+    };
+
+    const getColorName = (hexCode: string): string => {
+      const colorMap: { [key: string]: string } = {
+        '#F5F5DC': 'Natural',
+        '#FFFFFF': 'White',
+        '#FA623B': 'Poppy',
+        '#74B9FF': 'Sky',
+        '#2D3436': 'Space',
+        '#FDCB6E': 'Ochre',
+        '#636E72': 'Charcoal',
+        '#B2BEC3': 'Ash',
+        '#DFE6E9': 'Dove',
+        '#FF8A65': 'Tangerine',
+        '#D63031': 'Sienna',
+        '#E17055': 'Rust',
+        '#00B894': 'Mint',
+        '#A29BFE': 'Pear',
+        '#6C5CE7': 'Sage',
+        '#00CEA9': 'Kiwi',
+        '#55A3FF': 'Avocado',
+      };
+      return colorMap[hexCode] || 'Unknown Color';
+    };
+
+    const totalPrice = placedItems.reduce((sum, item) => sum + item.price, 0);
+
+    // Generate peg holes HTML
+    const generatePegHoles = () => {
+      const pegHoles = [];
+      for (let x = 1; x <= 7; x++) {
+        for (let y = 1; y <= 7; y++) {
+          const left = (x * 80) + 20;
+          const top = (y * 80) + 20;
+          pegHoles.push(`<div class="peg-hole" style="left: ${left}px; top: ${top}px;"></div>`);
+        }
+      }
+      return pegHoles.join('');
+    };
+
+    // Generate furniture items HTML
+    const generateFurnitureItems = () => {
+      return placedItems.map(item => {
+        const [x, y] = item.position;
+        const width = item.dimensions.width;
+        const height = item.dimensions.height;
+        
+        // Convert 3D coordinates to print coordinates
+        const printX = ((x + wallDimensions.width / 2) / wallDimensions.width) * 560 + 20;
+        const printY = ((wallDimensions.height - y - height) / wallDimensions.height) * 560 + 20;
+        const printWidth = (width / wallDimensions.width) * 560;
+        const printHeight = (height / wallDimensions.height) * 560;
+        
+        // Determine furniture type for styling
+        let furnitureType = 'cubby';
+        if (item.name.includes('Hook')) furnitureType = 'hook';
+        else if (item.name.includes('Table')) furnitureType = 'table';
+        else if (item.name.includes('Magazine Rack')) furnitureType = 'magazine-rack';
+        else if (item.name.includes('Bookshelf')) furnitureType = 'bookshelf';
+        else if (item.name.includes('Easel')) furnitureType = 'easel';
+        
+        return `<div class="furniture-item-print ${furnitureType}" style="left: ${printX}px; top: ${printY}px; width: ${printWidth}px; height: ${printHeight}px;">${item.name.split(' - ')[0]}</div>`;
+      }).join('');
+    };
+
+    // Generate furniture list HTML
+    const generateFurnitureList = () => {
+      return placedItems.map(item => `
+        <div class="furniture-item">
+          <div class="item-details">
+            <strong>${item.name}</strong><br>
+            <small>
+              <span class="color-swatch" style="background-color: ${item.color}"></span>
+              ${getColorName(item.color)} • 
+              ${Math.round(item.dimensions.width * 12)}" × ${Math.round(item.dimensions.height * 12)}" × ${Math.round(item.dimensions.depth * 12)}"
+            </small>
+          </div>
+          <div class="item-price">${formatCurrency(item.price)}</div>
+        </div>
+      `).join('');
+    };
+
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>PegWall Design - ${new Date().toLocaleDateString()}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+          .layout-section { margin-bottom: 30px; }
+          .layout-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+          .wall-dimensions { margin-bottom: 20px; }
+          .furniture-list { margin-bottom: 30px; }
+          .furniture-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+          .item-details { flex: 1; }
+          .item-price { font-weight: bold; }
+          .total-section { margin-top: 30px; padding-top: 20px; border-top: 2px solid #333; font-size: 18px; font-weight: bold; }
+          .color-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid #ccc; margin-right: 5px; }
+          .wall-container { position: relative; width: 600px; height: 600px; border: 3px solid #8B4513; background: linear-gradient(45deg, #DEB887 25%, transparent 25%), linear-gradient(-45deg, #DEB887 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #DEB887 75%), linear-gradient(-45deg, transparent 75%, #DEB887 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; margin: 20px auto; overflow: hidden; }
+          .peg-hole { position: absolute; width: 8px; height: 24px; background: #2D3436; border-radius: 2px; }
+          .furniture-item-print { position: absolute; border: 2px solid #333; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.8); overflow: hidden; }
+          .furniture-item-print.cubby { background: linear-gradient(135deg, #4CAF50, #45a049); }
+          .furniture-item-print.hook { background: linear-gradient(135deg, #FF9800, #F57C00); }
+          .furniture-item-print.table { background: linear-gradient(135deg, #2196F3, #1976D2); }
+          .furniture-item-print.magazine-rack { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
+          .furniture-item-print.bookshelf { background: linear-gradient(135deg, #607D8B, #455A64); }
+          .furniture-item-print.easel { background: linear-gradient(135deg, #E91E63, #C2185B); }
+          @media print { body { margin: 0; } .no-print { display: none; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>PegWall Design</h1>
+          <p>Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+        </div>
+
+        <div class="layout-section">
+          <div class="layout-title">Wall Layout (Front View)</div>
+          <div class="wall-dimensions">
+            <strong>Wall Dimensions:</strong> ${wallDimensions.width}' × ${wallDimensions.height}'
+          </div>
+          <div class="wall-container">
+            ${generatePegHoles()}
+            ${generateFurnitureItems()}
+          </div>
+          <p><small>Front view showing actual furniture placement on the peg wall. Dark rectangles are peg holes.</small></p>
+        </div>
+
+        <div class="layout-section">
+          <div class="layout-title">Furniture Items</div>
+          <div class="furniture-list">
+            ${generateFurnitureList()}
+          </div>
+        </div>
+
+        <div class="total-section">
+          <div class="furniture-item">
+            <div class="item-details">Total Cost</div>
+            <div class="item-price">${formatCurrency(totalPrice)}</div>
+          </div>
+        </div>
+
+        <div class="no-print" style="margin-top: 30px; text-align: center;">
+          <button onclick="window.print()">Print This Layout</button>
+          <button onclick="window.close()">Close</button>
+        </div>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.canvasContainer}>
@@ -385,6 +551,13 @@ const FurnitureVisualizer: React.FC = () => {
             onClick={() => handleCameraPreset('side')}
           >
             Side View
+          </button>
+          <button
+            className={styles.presetButton}
+            onClick={handlePrint}
+            style={{ backgroundColor: '#4CAF50', color: 'white' }}
+          >
+            Print Layout
           </button>
         </div>
 
