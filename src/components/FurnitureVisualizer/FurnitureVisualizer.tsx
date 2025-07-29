@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import Wall from '../Wall/Wall';
 import Cubby10x10 from '../FurnitureItem/Cubby10x10';
 import Cubby20x10 from '../FurnitureItem/Cubby20x10';
@@ -18,6 +19,7 @@ const FurnitureVisualizer: React.FC = () => {
     height: 8, // 8 feet
   });
   const cameraRef = useRef<any>(null);
+  const controlsRef = useRef<any>(null);
 
   // Grid constants for positioning
   const GRID_HORIZONTAL_SPACING = 0.67; // 8 inches = 0.67 feet
@@ -167,6 +169,20 @@ const FurnitureVisualizer: React.FC = () => {
     setWallDimensions(newDimensions);
   };
 
+  const handleZoomIn = () => {
+    if (controlsRef.current) {
+      controlsRef.current.dollyOut(1.2);
+      controlsRef.current.update();
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (controlsRef.current) {
+      controlsRef.current.dollyIn(1.2);
+      controlsRef.current.update();
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.canvasContainer}>
@@ -190,6 +206,17 @@ const FurnitureVisualizer: React.FC = () => {
 
           {/* 3D Scene */}
           <Wall dimensions={wallDimensions} />
+          
+          {/* Camera Controls */}
+          <OrbitControls
+            ref={controlsRef}
+            enablePan={true}
+            enableZoom={true}
+            enableRotate={true}
+            minDistance={2}
+            maxDistance={20}
+            target={[0, wallDimensions.height / 2, WALL_POSITION]}
+          />
           
           {/* Placed Furniture Items */}
           {placedItems.map(item => {
@@ -246,6 +273,22 @@ const FurnitureVisualizer: React.FC = () => {
             return null;
           })}
         </Canvas>
+
+        {/* Zoom Buttons */}
+        <div className={styles.zoomControls}>
+          <button
+            className={styles.zoomButton}
+            onClick={handleZoomIn}
+          >
+            +
+          </button>
+          <button
+            className={styles.zoomButton}
+            onClick={handleZoomOut}
+          >
+            -
+          </button>
+        </div>
 
         {/* Camera Preset Buttons */}
         <div className={styles.cameraPresets}>

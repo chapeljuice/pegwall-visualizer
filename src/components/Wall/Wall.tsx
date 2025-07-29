@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Plane } from '@react-three/drei';
+import * as THREE from 'three';
 import HardwoodFloor from './HardwoodFloor';
 import styles from './Wall.module.css';
 
@@ -22,6 +23,14 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
   const GRID_HORIZONTAL_SPACING = 0.67; // 8 inches = 0.67 feet
   const GRID_VERTICAL_SPACING = 0.5;   // 6 inches = 0.5 feet
   const WALL_POSITION = -2; // Z position of the wall
+
+  // Load texture once and memoize it
+  const wallTexture = useMemo(() => {
+    const texture = new THREE.TextureLoader().load('/images/wooden-plank-texture.jpg');
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    return texture;
+  }, []);
 
   // Calculate grid positions
   const horizontalPositions: number[] = [];
@@ -50,9 +59,10 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
         rotation={[0, 0, 0]}
       >
         <meshStandardMaterial
-          color="#FFF3E0" // Much lighter off-white color
-          roughness={0.2}
+          color="#FFFFFF"
+          roughness={0.1}
           metalness={0}
+          map={wallTexture}
         />
       </Plane>
 
