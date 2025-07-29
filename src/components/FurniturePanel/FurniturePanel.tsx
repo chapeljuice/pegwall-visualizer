@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
+import { FurnitureItem as FurnitureItemType, FurnitureGroup } from '../../types/furniture';
+import FurnitureGroupCard from './FurnitureGroupCard';
 import styles from './FurniturePanel.module.css';
 
 interface FurniturePanelProps {
@@ -21,50 +22,139 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'available' | 'placed'>('available');
 
-  const availableItems: FurnitureItemType[] = [
+  // Sample furniture groups - you can expand this with your 6 cubby sizes and 18 colors
+  const furnitureGroups: FurnitureGroup[] = [
     {
-      id: 'cubby-1',
-      name: 'Cubby - 10" x 10"',
+      id: 'cubby',
+      name: 'Cubby',
+      description: 'A little cubby to put things in.',
       type: 'storage',
-      dimensions: { width: 0.83, height: 0.83, depth: 0.83 }, // 10" x 10" x 10" in feet
-      color: '#F5F5DC',
       material: 'plywood',
-      price: 210,
-      position: [0, 0, 0],
-      pegHolesToSpan: 2, // Spans 2 peg holes (8" + 2" = 10")
+      basePrice: 210,
+      imagePath: '/images/products/cubby-10x10.jpg',
+      variants: [
+        {
+          id: '10x10',
+          name: '10" × 10"',
+          dimensions: { width: 0.83, height: 0.83, depth: 0.83 },
+          price: 0,
+          pegHolesToSpan: 2,
+        },
+        {
+          id: '10x16',
+          name: '10" × 16"',
+          dimensions: { width: 0.83, height: 1.67, depth: 0.83 },
+          price: 60,
+          pegHolesToSpan: 2,
+        },
+        {
+          id: '20x10',
+          name: '20" × 10"',
+          dimensions: { width: 1.67, height: 0.83, depth: 0.83 },
+          price: 100,
+          pegHolesToSpan: 3,
+        },
+        {
+          id: '20x16',
+          name: '20" × 16"',
+          dimensions: { width: 1.67, height: 1.33, depth: 0.83 },
+          price: 165,
+          pegHolesToSpan: 3,
+        },
+        {
+          id: '40x10',
+          name: '39" × 10"',
+          dimensions: { width: 3.33, height: 0.83, depth: 0.83 },
+          price: 305,
+          pegHolesToSpan: 5,
+        },
+        {
+          id: '39x16',
+          name: '40" × 16"',
+          dimensions: { width: 3.33, height: 1.33, depth: 0.83 },
+          price: 365,
+          pegHolesToSpan: 4,
+        },
+      ],
+      colors: [
+        { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
+        { id: 'walnut', name: 'Walnut', hexCode: '#8B4513', price: 20 },
+        { id: 'oak', name: 'Oak', hexCode: '#D2691E', price: 15 },
+        { id: 'maple', name: 'Maple', hexCode: '#F4A460', price: 10 },
+        { id: 'cherry', name: 'Cherry', hexCode: '#CD5C5C', price: 25 },
+        { id: 'mahogany', name: 'Mahogany', hexCode: '#8B0000', price: 30 },
+        { id: 'white', name: 'White', hexCode: '#FFFFFF', price: 5 },
+        { id: 'black', name: 'Black', hexCode: '#2F2F2F', price: 15 },
+        { id: 'gray', name: 'Gray', hexCode: '#808080', price: 8 },
+        { id: 'navy', name: 'Navy', hexCode: '#000080', price: 12 },
+        { id: 'forest-green', name: 'Forest Green', hexCode: '#228B22', price: 12 },
+        { id: 'burgundy', name: 'Burgundy', hexCode: '#800020', price: 18 },
+        { id: 'sage', name: 'Sage', hexCode: '#9CAF88', price: 10 },
+        { id: 'cream', name: 'Cream', hexCode: '#F5F5DC', price: 5 },
+        { id: 'espresso', name: 'Espresso', hexCode: '#3E2723', price: 20 },
+        { id: 'driftwood', name: 'Driftwood', hexCode: '#D2B48C', price: 15 },
+        { id: 'charcoal', name: 'Charcoal', hexCode: '#36454F', price: 18 },
+        { id: 'warm-white', name: 'Warm White', hexCode: '#FDF5E6', price: 5 },
+      ],
     },
     {
-      id: 'cubby-2',
-      name: 'Cubby - 20" x 10"',
-      type: 'storage',
-      dimensions: { width: 1.67, height: 0.83, depth: 0.83 }, // 20" x 10" x 10" in feet
-      color: '#F5F5DC',
-      material: 'plywood',
-      price: 310,
-      position: [0, 0, 0],
-      pegHolesToSpan: 3, // Spans 3 peg holes (8" + 8" + 4" = 20")
-    },
-    {
-      id: 'hook-1',
+      id: 'hook',
       name: 'Hook',
+      description: 'A hook for hanging things on.',
       type: 'hook',
-      dimensions: { width: 0.083, height: 0.67, depth: 0.42 }, // 1" x 8" x 5" in feet
-      color: '#F5F5DC',
       material: 'plywood',
-      price: 25,
-      position: [0, 0, 0],
-      pegHolesToSpan: 1, // Spans 1 peg hole (1" wide)
+      basePrice: 25,
+      imagePath: '/images/products/hook.jpg',
+      variants: [
+        {
+          id: 'standard',
+          name: 'Standard',
+          dimensions: { width: 0.083, height: 0.67, depth: 0.42 },
+          price: 0,
+          pegHolesToSpan: 1,
+        },
+      ],
+      colors: [
+        { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
+      ],
     },
     {
-      id: 'table-1',
+      id: 'table',
       name: 'Table',
+      description: 'A sturdy, easy to assemble work table that hooks into the wall panel.',
       type: 'table',
-      dimensions: { width: 3.17, height: 2.42, depth: 5.0 }, // 38" x 29" x 60" in feet (rotated)
-      color: '#8B4513',
-      material: 'oak',
-      price: 1535,
-      position: [0, 0, 0],
-      pegHolesToSpan: 4, // Spans 4 peg holes
+      material: 'plywood',
+      basePrice: 1535,
+      imagePath: '/images/products/table.jpg',
+      variants: [
+        {
+          id: 'standard',
+          name: 'Standard',
+          dimensions: { width: 3.17, height: 2.42, depth: 5.0 },
+          price: 0,
+          pegHolesToSpan: 4,
+        },
+      ],
+      colors: [
+        { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
+        { id: 'walnut', name: 'Walnut', hexCode: '#8B4513', price: 20 },
+        { id: 'oak', name: 'Oak', hexCode: '#D2691E', price: 15 },
+        { id: 'maple', name: 'Maple', hexCode: '#F4A460', price: 10 },
+        { id: 'cherry', name: 'Cherry', hexCode: '#CD5C5C', price: 25 },
+        { id: 'mahogany', name: 'Mahogany', hexCode: '#8B0000', price: 30 },
+        { id: 'white', name: 'White', hexCode: '#FFFFFF', price: 5 },
+        { id: 'black', name: 'Black', hexCode: '#2F2F2F', price: 15 },
+        { id: 'gray', name: 'Gray', hexCode: '#808080', price: 8 },
+        { id: 'navy', name: 'Navy', hexCode: '#000080', price: 12 },
+        { id: 'forest-green', name: 'Forest Green', hexCode: '#228B22', price: 12 },
+        { id: 'burgundy', name: 'Burgundy', hexCode: '#800020', price: 18 },
+        { id: 'sage', name: 'Sage', hexCode: '#9CAF88', price: 10 },
+        { id: 'cream', name: 'Cream', hexCode: '#F5F5DC', price: 5 },
+        { id: 'espresso', name: 'Espresso', hexCode: '#3E2723', price: 20 },
+        { id: 'driftwood', name: 'Driftwood', hexCode: '#D2B48C', price: 15 },
+        { id: 'charcoal', name: 'Charcoal', hexCode: '#36454F', price: 18 },
+        { id: 'warm-white', name: 'Warm White', hexCode: '#FDF5E6', price: 5 },
+      ],
     },
   ];
 
@@ -72,18 +162,14 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
 
   // Function to get the appropriate image for each furniture item
   const getItemImage = (itemName: string): string => {
-    switch (itemName) {
-      case 'Cubby - 10" x 10"':
-        return '/images/products/cubby-10x10.jpg';
-      case 'Cubby - 20" x 10"':
-        return '/images/products/cubby-20x10.jpg';
-      case 'Hook':
-        return '/images/products/hook.jpg';
-      case 'Table':
-        return '/images/products/table.jpg';
-      default:
-        return '/images/products/cubby-10x10.jpg'; // Default fallback
+    if (itemName.includes('Cubby')) {
+      return '/images/products/cubby-10x10.jpg';
+    } else if (itemName.includes('Hook')) {
+      return '/images/products/hook.jpg';
+    } else if (itemName.includes('Table')) {
+      return '/images/products/table.jpg';
     }
+    return '/images/products/cubby-10x10.jpg'; // Default fallback
   };
 
   return (
@@ -91,7 +177,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
       <div className={styles.header}>
         <h2>Peg Hole Wall Designer</h2>
         <div className={styles.instructions}>
-          <p>Click a product to place it on the wall. Drag to move them around!</p>
+          <p>Click a product group to see customization options. Drag placed items to move them around!</p>
           <p>Furniture snaps to a 16" × 8" grid.</p>
         </div>
         <div className={styles.tabs}>
@@ -113,29 +199,12 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
       <div className={styles.content}>
         {activeTab === 'available' ? (
           <div className={styles.itemsGrid}>
-            {availableItems.map((item) => (
-              <div
-                key={item.id}
-                className={styles.itemCard}
-                onClick={() => onPlaceItem(item)}
-              >
-                <div
-                  className={styles.itemPreview}
-                  style={{ 
-                    backgroundImage: `url(${getItemImage(item.name)})`,
-                    backgroundSize: 'contain',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundColor: 'white'
-                  }}
-                >
-                </div>
-                <div className={styles.itemInfo}>
-                  <h3>{item.name}</h3>
-                  <p className={styles.material}>{item.material}</p>
-                  <p className={styles.price}>${item.price}</p>
-                </div>
-              </div>
+            {furnitureGroups.map((group) => (
+              <FurnitureGroupCard
+                key={group.id}
+                group={group}
+                onPlaceItem={onPlaceItem}
+              />
             ))}
           </div>
         ) : (

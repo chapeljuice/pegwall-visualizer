@@ -24,14 +24,14 @@ const Cubby10x10: React.FC<Cubby10x10Props> = (props) => {
 
   return (
     <BaseFurnitureItem {...props}>
-      {/* Interior surfaces (orange) - paper-thin paint-like coating */}
+      {/* Interior surfaces - using the selected color */}
       {/* Left interior surface */}
       <Box
         args={[0.01, height - wallThickness * 2, depth]}
         position={[wallThickness, height / 2, 0]}
       >
         <meshStandardMaterial
-          color="#FA623B"
+          color={item.color}
           roughness={0.7}
           metalness={0.1}
         />
@@ -43,7 +43,7 @@ const Cubby10x10: React.FC<Cubby10x10Props> = (props) => {
         position={[width - wallThickness, height / 2, 0]}
       >
         <meshStandardMaterial
-          color="#FA623B"
+          color={item.color}
           roughness={0.7}
           metalness={0.1}
         />
@@ -55,7 +55,7 @@ const Cubby10x10: React.FC<Cubby10x10Props> = (props) => {
         position={[width / 2, height - wallThickness, 0]}
       >
         <meshStandardMaterial
-          color="#FA623B"
+          color={item.color}
           roughness={0.7}
           metalness={0.1}
         />
@@ -67,7 +67,7 @@ const Cubby10x10: React.FC<Cubby10x10Props> = (props) => {
         position={[width / 2, wallThickness, 0]}
       >
         <meshStandardMaterial
-          color="#FA623B"
+          color={item.color}
           roughness={0.7}
           metalness={0.1}
         />
@@ -79,7 +79,7 @@ const Cubby10x10: React.FC<Cubby10x10Props> = (props) => {
         position={[width / 2, height / 2, -depth / 2 + wallThickness - 0.005]}
       >
         <meshStandardMaterial
-          color="#FA623B"
+          color={item.color}
           roughness={0.7}
           metalness={0.1}
         />

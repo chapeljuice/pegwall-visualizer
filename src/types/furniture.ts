@@ -20,6 +20,38 @@ export interface FurnitureCategory {
   items: FurnitureItem[];
 }
 
+// New interfaces for grouped furniture system
+export interface FurnitureVariant {
+  id: string;
+  name: string;
+  dimensions: {
+    width: number;
+    height: number;
+    depth: number;
+  };
+  price: number;
+  pegHolesToSpan: number;
+}
+
+export interface FurnitureColor {
+  id: string;
+  name: string;
+  hexCode: string;
+  price: number; // Some colors might cost more
+}
+
+export interface FurnitureGroup {
+  id: string;
+  name: string;
+  description: string;
+  type: 'storage' | 'table' | 'hook';
+  material: 'plywood' | 'oak' | 'walnut' | 'maple' | 'metal';
+  basePrice: number;
+  variants: FurnitureVariant[];
+  colors: FurnitureColor[];
+  imagePath: string;
+}
+
 export interface WallDimensions {
   width: number;
   height: number;

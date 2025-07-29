@@ -198,14 +198,12 @@
 }
 
 .totalPrice {
-  margin-top: 20px;
-  padding: 15px;
-  background: #f8f9ff;
   border-radius: 6px;
   text-align: center;
-  font-size: 18px;
-  color: #333;
-  border: 1px solid #e0e0e0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #4CAF50;
+  line-height: 1.2;
 }
 
 .emptyState {
@@ -244,4 +242,209 @@
   .itemsGrid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
+}
+
+/* New styles for grouped furniture system */
+.groupCard {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.groupCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.groupCardHeader {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.groupCardHeader:hover {
+  background: #f8f9ff;
+}
+
+.groupPreview {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.groupInfo {
+  flex: 1;
+}
+
+.groupInfo h3 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.description {
+  margin: 0 0 5px 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.3;
+}
+
+.expandIcon {
+  font-size: 20px;
+  font-weight: bold;
+  color: #666;
+  margin-left: 10px;
+  transition: transform 0.2s ease;
+}
+
+.customizationPanel {
+  border-top: 1px solid #e0e0e0;
+  padding: 15px;
+  background: #f8f9ff;
+}
+
+.customizationSection {
+  margin-bottom: 20px;
+}
+
+.customizationSection h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.variantGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.variantOption {
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.variantOption:hover {
+  border-color: #667eea;
+  background: #f8f9ff;
+}
+
+.variantOption.selected {
+  border-color: #667eea;
+  background: #e8f0ff;
+  color: #333;
+}
+
+.variantName {
+  font-weight: 600;
+}
+
+.variantPrice {
+  font-size: 10px;
+  color: #4CAF50;
+}
+
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.colorOption {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.colorOption:hover {
+  transform: scale(1.1);
+  border-color: #667eea;
+}
+
+.colorOption.selected {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #667eea;
+}
+
+.checkmark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.selectedOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 15px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.selectedInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.selectedInfo span:first-child {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.2;
+}
+
+.priceAndButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.addToWallButton {
+  padding: 8px 16px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addToWallButton:hover {
+  background: #45a049;
 } 

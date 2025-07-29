@@ -35,7 +35,7 @@ const Table: React.FC<TableProps> = (props) => {
         position={[width / 2, height - tableTopThickness / 2, 0]}
       >
         <meshStandardMaterial
-          color="#FA623B"
+          color={item.color}
           roughness={0.7}
           metalness={0.1}
         />
@@ -47,7 +47,7 @@ const Table: React.FC<TableProps> = (props) => {
         position={[legWidth / 2, legHeight / 2, depth / 2 - legDepth / 2]}
       >
         <meshStandardMaterial
-          color="#F5F5DC"
+          color={item.color}
           roughness={0.7}
           metalness={0.1}
         />
@@ -59,7 +59,7 @@ const Table: React.FC<TableProps> = (props) => {
         position={[width - legWidth / 2, legHeight / 2, depth / 2 - legDepth / 2]}
       >
         <meshStandardMaterial
-          color="#F5F5DC"
+          color={item.color}
           roughness={0.7}
           metalness={0.1}
         />
@@ -71,7 +71,7 @@ const Table: React.FC<TableProps> = (props) => {
         position={[width / 2, legHeight / 2, -depth / 2 + legDepth / 2]}
       >
         <meshStandardMaterial
-          color="#F5F5DC"
+          color={item.color}
           roughness={0.7}
           metalness={0.1}
         />

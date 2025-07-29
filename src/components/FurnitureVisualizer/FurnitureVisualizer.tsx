@@ -226,40 +226,41 @@ const FurnitureVisualizer: React.FC = () => {
           
           {/* Placed Furniture Items */}
           {placedItems.map(item => {
-            // Use specific components based on item name
-            if (item.name === 'Cubby - 10" x 10"') {
-              return (
-                <Cubby10x10
-                  key={item.id}
-                  item={item}
-                  isSelected={selectedItemId === item.id}
-                  onSelect={() => handleSelectItem(item.id)}
-                  onMove={handleMoveItem}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                  wallDimensions={wallDimensions}
-                  placedItems={placedItems}
-                />
-              );
+            // Use specific components based on item name patterns
+            if (item.name.includes('Cubby')) {
+              // Use Cubby10x10 for smaller cubbies, Cubby20x10 for larger ones
+              if (item.dimensions.width <= 0.83) { // 10" or smaller
+                return (
+                  <Cubby10x10
+                    key={item.id}
+                    item={item}
+                    isSelected={selectedItemId === item.id}
+                    onSelect={() => handleSelectItem(item.id)}
+                    onMove={handleMoveItem}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    wallDimensions={wallDimensions}
+                    placedItems={placedItems}
+                  />
+                );
+              } else {
+                return (
+                  <Cubby20x10
+                    key={item.id}
+                    item={item}
+                    isSelected={selectedItemId === item.id}
+                    onSelect={() => handleSelectItem(item.id)}
+                    onMove={handleMoveItem}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    wallDimensions={wallDimensions}
+                    placedItems={placedItems}
+                  />
+                );
+              }
             }
             
-            if (item.name === 'Cubby - 20" x 10"') {
-              return (
-                <Cubby20x10
-                  key={item.id}
-                  item={item}
-                  isSelected={selectedItemId === item.id}
-                  onSelect={() => handleSelectItem(item.id)}
-                  onMove={handleMoveItem}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                  wallDimensions={wallDimensions}
-                  placedItems={placedItems}
-                />
-              );
-            }
-            
-            if (item.name === 'Hook') {
+            if (item.name.includes('Hook')) {
               return (
                 <Hook
                   key={item.id}
@@ -275,7 +276,7 @@ const FurnitureVisualizer: React.FC = () => {
               );
             }
             
-            if (item.name === 'Table') {
+            if (item.name.includes('Table')) {
               return (
                 <Table
                   key={item.id}
@@ -291,8 +292,13 @@ const FurnitureVisualizer: React.FC = () => {
               );
             }
             
-            // Fallback - shouldn't happen with current items
-            return null;
+            // Fallback - render a simple red cube for debugging
+            return (
+              <mesh key={item.id} position={item.position}>
+                <boxGeometry args={[item.dimensions.width, item.dimensions.height, item.dimensions.depth]} />
+                <meshStandardMaterial color="red" />
+              </mesh>
+            );
           })}
         </Canvas>
 
