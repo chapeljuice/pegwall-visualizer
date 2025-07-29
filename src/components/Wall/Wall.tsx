@@ -102,7 +102,7 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
       </Plane>
 
       {/* Floor */}
-      <HardwoodFloor width={wallWidth} depth={6} />
+      <HardwoodFloor width={wallWidth} depth={4} />
     </>
   );
 };

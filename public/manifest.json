@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Peg Wall Visualizer",
+  "name": "A PoC Wall Visualizer for different furniture products.",
   "icons": [
     {
       "src": "favicon.ico",
