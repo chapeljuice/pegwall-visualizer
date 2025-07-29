@@ -5,6 +5,7 @@ import Wall from '../Wall/Wall';
 import Cubby10x10 from '../FurnitureItem/Cubby10x10';
 import Cubby20x10 from '../FurnitureItem/Cubby20x10';
 import Hook from '../FurnitureItem/Hook';
+import Table from '../FurnitureItem/Table';
 import FurniturePanel from '../FurniturePanel/FurniturePanel';
 import WallDimensionsForm from '../WallDimensionsForm/WallDimensionsForm';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
@@ -183,6 +184,11 @@ const FurnitureVisualizer: React.FC = () => {
     }
   };
 
+  const handleClearWall = () => {
+    setPlacedItems([]);
+    setSelectedItemId(null);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.canvasContainer}>
@@ -210,9 +216,9 @@ const FurnitureVisualizer: React.FC = () => {
           {/* Camera Controls */}
           <OrbitControls
             ref={controlsRef}
-            enablePan={true}
-            enableZoom={true}
-            enableRotate={true}
+            enablePan={false}
+            enableZoom={false}
+            enableRotate={false}
             minDistance={2}
             maxDistance={20}
             target={[0, wallDimensions.height / 2, WALL_POSITION]}
@@ -256,6 +262,22 @@ const FurnitureVisualizer: React.FC = () => {
             if (item.name === 'Hook') {
               return (
                 <Hook
+                  key={item.id}
+                  item={item}
+                  isSelected={selectedItemId === item.id}
+                  onSelect={() => handleSelectItem(item.id)}
+                  onMove={handleMoveItem}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  wallDimensions={wallDimensions}
+                  placedItems={placedItems}
+                />
+              );
+            }
+            
+            if (item.name === 'Table') {
+              return (
+                <Table
                   key={item.id}
                   item={item}
                   isSelected={selectedItemId === item.id}
@@ -333,6 +355,7 @@ const FurnitureVisualizer: React.FC = () => {
           }
         }}
         onSelectItem={(item) => setSelectedItemId(item?.id || null)}
+        onClearWall={handleClearWall}
       />
     </div>
   );
