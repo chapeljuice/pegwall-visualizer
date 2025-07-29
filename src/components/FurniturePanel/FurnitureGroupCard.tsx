@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FurnitureGroup, FurnitureItem, FurnitureColor } from '../../types/furniture';
+import { FurnitureGroup, FurnitureItem, FurnitureColor, SHARED_COLORS } from '../../types/furniture';
 import styles from './FurniturePanel.module.css';
 
 interface FurnitureGroupCardProps {
@@ -17,12 +17,14 @@ const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(group.variants[0]);
-  const [selectedColor, setSelectedColor] = useState(sharedSelectedColor);
+  const [selectedColor, setSelectedColor] = useState(group.colors[0]);
 
-  // Update local selected color when shared color changes
+  // Update local selected color when shared color changes, but only if the group uses shared colors
   React.useEffect(() => {
-    setSelectedColor(sharedSelectedColor);
-  }, [sharedSelectedColor]);
+    if (group.colors === SHARED_COLORS) {
+      setSelectedColor(sharedSelectedColor);
+    }
+  }, [sharedSelectedColor, group.colors]);
 
   const handlePlaceItem = () => {
     const item: FurnitureItem = {

@@ -345,19 +345,6 @@ const Hook: React.FC<HookProps> = ({
         </Box>
       </group>
       
-      {/* Black stroke around hook */}
-      <group position={[width / 2, height / 2, depth / 2]}>
-        <mesh>
-          <boxGeometry args={[width + 0.02, height + 0.02, depth + 0.02]} />
-          <meshStandardMaterial
-            color="#000000"
-            transparent
-            opacity={0.8}
-            wireframe
-          />
-        </mesh>
-      </group>
-      
       {/* Selection indicator */}
       {isSelected && (
         <group position={[width / 2, height / 2, 0]}>
