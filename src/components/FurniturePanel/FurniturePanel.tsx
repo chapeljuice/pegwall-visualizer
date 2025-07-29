@@ -147,6 +147,41 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
         { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
       ],
     },
+    {
+      id: 'bookshelf',
+      name: 'Bookshelf',
+      description: 'A sturdy shelf to hold books and things.',
+      type: 'storage',
+      material: 'plywood',
+      basePrice: 155,
+      imagePath: '/images/products/bookshelf.jpg',
+      variants: [
+        {
+          id: '2-slot',
+          name: '2 Slot',
+          dimensions: { width: 0.67, height: 0.83, depth: 0.83 }, // 8" × 10" × 10" in feet
+          price: 0,
+          pegHolesToSpan: 2,
+        },
+        {
+          id: '3-slot',
+          name: '3 Slot',
+          dimensions: { width: 1.33, height: 0.83, depth: 0.83 }, // 16" × 10" × 10" in feet
+          price: 65,
+          pegHolesToSpan: 3,
+        },
+        {
+          id: '4-slot',
+          name: '4 Slot',
+          dimensions: { width: 2.0, height: 0.83, depth: 0.83 }, // 24" × 10" × 10" in feet
+          price: 115,
+          pegHolesToSpan: 4,
+        },
+      ],
+      colors: [
+        { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
+      ],
+    },
   ];
 
   const totalPrice = placedItems.reduce((sum, item) => sum + item.price, 0);
@@ -160,7 +195,9 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
     } else if (itemName.includes('Table')) {
       return '/images/products/table.jpg';
     } else if (itemName.includes('Magazine Rack')) {
-      return '/images/products/cubby-10x10.jpg'; // Using cubby image as placeholder
+      return '/images/products/magazine-rack.jpg';
+    } else if (itemName.includes('Bookshelf')) {
+      return '/images/products/bookshelf.jpg';
     }
     return '/images/products/cubby-10x10.jpg'; // Default fallback
   };

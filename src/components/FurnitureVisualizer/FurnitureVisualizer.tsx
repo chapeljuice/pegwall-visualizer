@@ -7,6 +7,7 @@ import Cubby20x10 from '../FurnitureItem/Cubby20x10';
 import Hook from '../FurnitureItem/Hook';
 import Table from '../FurnitureItem/Table';
 import MagazineRack from '../FurnitureItem/MagazineRack';
+import Bookshelf from '../FurnitureItem/Bookshelf';
 import FurniturePanel from '../FurniturePanel/FurniturePanel';
 import WallDimensionsForm from '../WallDimensionsForm/WallDimensionsForm';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
@@ -92,7 +93,8 @@ const FurnitureVisualizer: React.FC = () => {
     // Search through all valid peg hole positions
     for (const y of verticalPositions) {
       for (const x of horizontalPositions) {
-        const position: [number, number, number] = [x, y, WALL_POSITION];
+        // Position furniture so its back wall is at the wall position
+        const position: [number, number, number] = [x, y, WALL_POSITION + item.dimensions.depth / 2];
         
         // Check if position is within wall boundaries (top-left corner positioning)
         if (
@@ -110,7 +112,7 @@ const FurnitureVisualizer: React.FC = () => {
     }
 
     // If no position found, return a fallback position (top-right corner)
-    const fallbackPosition: [number, number, number] = [wallWidth / 2 - item.dimensions.width - GRID_HORIZONTAL_SPACING, wallHeight - item.dimensions.height - GRID_VERTICAL_SPACING, WALL_POSITION];
+    const fallbackPosition: [number, number, number] = [wallWidth / 2 - item.dimensions.width - GRID_HORIZONTAL_SPACING, wallHeight - item.dimensions.height - GRID_VERTICAL_SPACING, WALL_POSITION + item.dimensions.depth / 2];
     return fallbackPosition;
   };
 
@@ -146,7 +148,7 @@ const FurnitureVisualizer: React.FC = () => {
     setIsDragging(false);
   }, []);
 
-  const handleCameraPreset = (preset: 'front' | 'top' | 'perspective') => {
+  const handleCameraPreset = (preset: 'front' | 'top' | 'perspective' | 'side') => {
     if (!cameraRef.current) return;
 
     const camera = cameraRef.current;
@@ -163,6 +165,10 @@ const FurnitureVisualizer: React.FC = () => {
       case 'perspective':
         camera.position.set(8, 8, 8); // Moved further out from 6,6,6 to 8,8,8
         camera.lookAt(0, 4, -2);
+        break;
+      case 'side':
+        camera.position.set(10, 6, -2); // Side view from the right
+        camera.lookAt(0, 4, 0);
         break;
     }
   };
@@ -311,6 +317,23 @@ const FurnitureVisualizer: React.FC = () => {
               );
             }
             
+            if (item.name.includes('Bookshelf')) {
+              console.log('Rendering as Bookshelf');
+              return (
+                <Bookshelf
+                  key={item.id}
+                  item={item}
+                  isSelected={selectedItemId === item.id}
+                  onSelect={() => handleSelectItem(item.id)}
+                  onMove={handleMoveItem}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  wallDimensions={wallDimensions}
+                  placedItems={placedItems}
+                />
+              );
+            }
+            
             // Fallback - render a simple red cube for debugging
             return (
               <mesh key={item.id} position={item.position}>
@@ -356,6 +379,12 @@ const FurnitureVisualizer: React.FC = () => {
             onClick={() => handleCameraPreset('perspective')}
           >
             45° View
+          </button>
+          <button
+            className={styles.presetButton}
+            onClick={() => handleCameraPreset('side')}
+          >
+            Side View
           </button>
         </div>
 

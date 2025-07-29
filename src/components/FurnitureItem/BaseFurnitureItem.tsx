@@ -227,8 +227,9 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
       }
     }
 
-    return [closestX, closestY, z];
-  }, [width, height, WALL_LEFT, WALL_RIGHT, WALL_BOTTOM, WALL_TOP, WALL_WIDTH, WALL_HEIGHT, GRID_HORIZONTAL_SPACING, GRID_VERTICAL_SPACING]);
+    // Position furniture so its back wall is at the wall position
+    return [closestX, closestY, WALL_POSITION + depth / 2];
+  }, [width, height, depth, WALL_LEFT, WALL_RIGHT, WALL_BOTTOM, WALL_TOP, WALL_WIDTH, WALL_HEIGHT, GRID_HORIZONTAL_SPACING, GRID_VERTICAL_SPACING, WALL_POSITION]);
 
   // Function to get intersection with wall plane
   const getWallIntersection = useCallback((mouseX: number, mouseY: number): Vector3 | null => {

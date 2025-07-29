@@ -105,7 +105,11 @@ const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
                     onClick={() => setSelectedVariant(variant)}
                   >
                     <span className={styles.variantName}>{variant.name}</span>
-                    <span className={styles.variantPrice}>+{formatCurrency(variant.price)}</span>
+                    {variant.price === 0 ? (
+                      <span className={styles.variantPrice}>{formatCurrency(group.basePrice)}</span>
+                    ) : (
+                      <span className={styles.variantPrice}>+{formatCurrency(variant.price)}</span>
+                    )}
                   </button>
                 ))}
               </div>
