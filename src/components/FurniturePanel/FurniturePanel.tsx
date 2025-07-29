@@ -182,6 +182,25 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
         { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
       ],
     },
+    {
+      id: 'easel',
+      name: 'Easel',
+      description: 'This simple workspace can be hung vertically or horizontally as needed. When horizontal it is a sturdy work surface; When hung vertically it has a small ledger to hold papers or drawing tools. The edge of the worktop overhangs to allow paper to be clipped in place when used in the easel position.',
+      type: 'table',
+      material: 'plywood',
+      basePrice: 565,
+      imagePath: '/images/products/easel.jpg',
+      variants: [
+        {
+          id: 'standard',
+          name: 'Standard',
+          dimensions: { width: 2.5, height: 2.17, depth: 0.42 }, // 30" × 26" × 5" in feet
+          price: 0,
+          pegHolesToSpan: 3,
+        },
+      ],
+      colors: SHARED_COLORS,
+    },
   ];
 
   const totalPrice = placedItems.reduce((sum, item) => sum + item.price, 0);
@@ -198,6 +217,8 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
       return '/images/products/magazine-rack.jpg';
     } else if (itemName.includes('Bookshelf')) {
       return '/images/products/bookshelf.jpg';
+    } else if (itemName.includes('Easel')) {
+      return '/images/products/easel.jpg';
     }
     return '/images/products/cubby-10x10.jpg'; // Default fallback
   };

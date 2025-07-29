@@ -56,6 +56,12 @@ const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
 
   const totalPrice = group.basePrice + selectedVariant.price + selectedColor.price;
 
+  // Function to truncate description
+  const truncateDescription = (text: string, maxLength: number = 100): string => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + '...';
+  };
+
   return (
     <div className={styles.groupCard}>
       <div 
@@ -74,8 +80,9 @@ const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
         />
         <div className={styles.groupInfo}>
           <h3>{group.name}</h3>
-          <p className={styles.description}>{group.description}</p>
-          <p className={styles.material}>{group.material}</p>
+          <p className={styles.description}>
+            {isExpanded ? group.description : truncateDescription(group.description)}
+          </p>
           <p className={styles.price}>Starting at {formatCurrency(group.basePrice)}</p>
         </div>
         <div className={styles.expandIcon}>

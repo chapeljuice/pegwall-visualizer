@@ -8,6 +8,7 @@ import Hook from '../FurnitureItem/Hook';
 import Table from '../FurnitureItem/Table';
 import MagazineRack from '../FurnitureItem/MagazineRack';
 import Bookshelf from '../FurnitureItem/Bookshelf';
+import Easel from '../FurnitureItem/Easel';
 import FurniturePanel from '../FurniturePanel/FurniturePanel';
 import WallDimensionsForm from '../WallDimensionsForm/WallDimensionsForm';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
@@ -321,6 +322,23 @@ const FurnitureVisualizer: React.FC = () => {
               console.log('Rendering as Bookshelf');
               return (
                 <Bookshelf
+                  key={item.id}
+                  item={item}
+                  isSelected={selectedItemId === item.id}
+                  onSelect={() => handleSelectItem(item.id)}
+                  onMove={handleMoveItem}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  wallDimensions={wallDimensions}
+                  placedItems={placedItems}
+                />
+              );
+            }
+            
+            if (item.name.includes('Easel')) {
+              console.log('Rendering as Easel');
+              return (
+                <Easel
                   key={item.id}
                   item={item}
                   isSelected={selectedItemId === item.id}
