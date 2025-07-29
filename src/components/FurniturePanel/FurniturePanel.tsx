@@ -91,7 +91,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
       <div className={styles.header}>
         <h2>Peg Hole Wall Designer</h2>
         <div className={styles.instructions}>
-          <p>Click items to place them on the wall. Drag to move them around!</p>
+          <p>Click a product to place it on the wall. Drag to move them around!</p>
           <p>Furniture snaps to a 16" × 8" grid.</p>
         </div>
         <div className={styles.tabs}>
@@ -99,13 +99,13 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
             className={`${styles.tab} ${activeTab === 'available' ? styles.active : ''}`}
             onClick={() => setActiveTab('available')}
           >
-            Available Items
+            Available Products
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'placed' ? styles.active : ''}`}
             onClick={() => setActiveTab('placed')}
           >
-            Placed Items ({placedItems.length})
+            View Cart ({placedItems.length})
           </button>
         </div>
       </div>
@@ -142,7 +142,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
           <div className={styles.placedItems}>
             {placedItems.length === 0 ? (
               <p className={styles.emptyState}>
-                No items placed yet. Select items from the "Available Items" tab to start designing your space.
+                No products added yet.<br /><br />Select products from the "Available Products" tab to start designing your space.
               </p>
             ) : (
               <>
