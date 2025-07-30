@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box } from '@react-three/drei';
-import { TextureLoader } from 'three';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import BaseFurnitureItem from './BaseFurnitureItem';
+import { getWoodenTexture } from '../../utils/textureLoader';
 
 interface CubbyProps {
   item: FurnitureItemType;
@@ -23,11 +23,8 @@ const Cubby: React.FC<CubbyProps> = (props) => {
   const { width, height, depth } = item.dimensions;
   const wallThickness = 0.083; // 1 inch = 0.083 feet
 
-  // Load wooden texture
-  const woodenTexture = useMemo(() => {
-    const loader = new TextureLoader();
-    return loader.load('/images/wooden-texture.jpg');
-  }, []);
+  // Get preloaded wooden texture
+  const woodenTexture = getWoodenTexture();
 
   return (
     <BaseFurnitureItem {...props}>

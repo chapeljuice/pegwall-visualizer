@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box } from '@react-three/drei';
-import { TextureLoader } from 'three';
 import BaseFurnitureItem from './BaseFurnitureItem';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
+import { getWoodenTexture } from '../../utils/textureLoader';
 
 interface EaselProps {
   item: FurnitureItemType;
@@ -32,11 +32,8 @@ const Easel: React.FC<EaselProps> = ({
 }) => {
   const { width, height, depth } = item.dimensions;
 
-  // Load wooden texture
-  const woodenTexture = useMemo(() => {
-    const loader = new TextureLoader();
-    return loader.load('/images/wooden-texture.jpg');
-  }, []);
+  // Get preloaded wooden texture
+  const woodenTexture = getWoodenTexture();
 
   return (
     <BaseFurnitureItem

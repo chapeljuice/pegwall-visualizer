@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box } from '@react-three/drei';
-import { TextureLoader } from 'three';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import BaseFurnitureItem from './BaseFurnitureItem';
+import { getWoodenTexture } from '../../utils/textureLoader';
 
 interface TableProps {
   item: FurnitureItemType;
@@ -22,11 +22,8 @@ const Table: React.FC<TableProps> = (props) => {
   const { item } = props;
   const { width, height, depth } = item.dimensions;
 
-  // Load wooden texture
-  const woodenTexture = useMemo(() => {
-    const loader = new TextureLoader();
-    return loader.load('/images/wooden-texture.jpg');
-  }, []);
+  // Get preloaded wooden texture
+  const woodenTexture = getWoodenTexture();
 
   return (
     <BaseFurnitureItem {...props}>

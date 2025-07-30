@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Plane } from '@react-three/drei';
 import * as THREE from 'three';
 import HardwoodFloor from './HardwoodFloor';
 import styles from './Wall.module.css';
+import { getWoodenPlankTexture } from '../../utils/textureLoader';
 
 interface WallProps {
   dimensions: {
@@ -24,13 +25,8 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
   const GRID_VERTICAL_SPACING = 0.5;   // 6 inches = 0.5 feet
   const WALL_POSITION = -2; // Z position of the wall
 
-  // Load texture once and memoize it
-  const wallTexture = useMemo(() => {
-    const texture = new THREE.TextureLoader().load('/images/wooden-plank-texture.jpg');
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    return texture;
-  }, []);
+  // Get preloaded texture
+  const wallTexture = getWoodenPlankTexture();
 
   // Calculate grid positions
   const horizontalPositions: number[] = [];
@@ -104,7 +100,7 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
       </Plane>
 
       {/* Floor */}
-      <HardwoodFloor width={wallWidth} depth={4} />
+      {/* <HardwoodFloor width={wallWidth} depth={4} /> */}
     </>
   );
 };

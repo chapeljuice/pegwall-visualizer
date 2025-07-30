@@ -11,6 +11,7 @@ import Easel from '../products/Easel';
 import FurniturePanel from '../FurniturePanel/FurniturePanel';
 import WallDimensionsForm from '../WallDimensionsForm/WallDimensionsForm';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
+import { useTextureLoader } from '../../hooks/useTextureLoader';
 import styles from './FurnitureVisualizer.module.css';
 
 const FurnitureVisualizer: React.FC = () => {
@@ -23,6 +24,9 @@ const FurnitureVisualizer: React.FC = () => {
   });
   const cameraRef = useRef<any>(null);
   const controlsRef = useRef<any>(null);
+  
+  // Load textures
+  const { texturesLoaded, loadingError } = useTextureLoader();
 
   // Grid constants for positioning
   const GRID_HORIZONTAL_SPACING = 0.67; // 8 inches = 0.67 feet
@@ -361,6 +365,29 @@ const FurnitureVisualizer: React.FC = () => {
     printWindow.document.write(printContent);
     printWindow.document.close();
   };
+
+  // Show loading state while textures are loading
+  if (!texturesLoaded) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingMessage}>
+            {loadingError ? (
+              <div>
+                <p>Error loading textures: {loadingError}</p>
+                <p>Please refresh the page to try again.</p>
+              </div>
+            ) : (
+              <div>
+                <p>Loading textures...</p>
+                <div className={styles.loadingSpinner}></div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
