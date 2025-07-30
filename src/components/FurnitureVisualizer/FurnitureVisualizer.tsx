@@ -332,11 +332,13 @@ const FurnitureVisualizer: React.FC = () => {
   const handleDismissRecommendation = (recommendationId: string) => {
     // Store dismissed recommendations to avoid showing them again
     const dismissed = JSON.parse(localStorage.getItem('dismissed_recommendations') || '[]');
-    dismissed.push(recommendationId);
-    localStorage.setItem('dismissed_recommendations', JSON.stringify(dismissed));
-    
-    // Force re-render to hide dismissed recommendations
-    setPlacedItems(prev => [...prev]);
+    if (!dismissed.includes(recommendationId)) {
+      dismissed.push(recommendationId);
+      localStorage.setItem('dismissed_recommendations', JSON.stringify(dismissed));
+      
+      // Force re-render to hide dismissed recommendations
+      setPlacedItems(prev => [...prev]);
+    }
   };
 
   const handlePrint = () => {
@@ -578,6 +580,7 @@ const FurnitureVisualizer: React.FC = () => {
                   onDragEnd={handleDragEnd}
                   wallDimensions={wallDimensions}
                   placedItems={placedItems}
+                  showLabel={false}
                 />
               );
             }
@@ -594,6 +597,7 @@ const FurnitureVisualizer: React.FC = () => {
                   onDragEnd={handleDragEnd}
                   wallDimensions={wallDimensions}
                   placedItems={placedItems}
+                  showLabel={false}
                 />
               );
             }
@@ -611,6 +615,7 @@ const FurnitureVisualizer: React.FC = () => {
                   onDragEnd={handleDragEnd}
                   wallDimensions={wallDimensions}
                   placedItems={placedItems}
+                  showLabel={false}
                 />
               );
             }
@@ -628,6 +633,7 @@ const FurnitureVisualizer: React.FC = () => {
                   onDragEnd={handleDragEnd}
                   wallDimensions={wallDimensions}
                   placedItems={placedItems}
+                  showLabel={false}
                 />
               );
             }
@@ -645,6 +651,7 @@ const FurnitureVisualizer: React.FC = () => {
                   onDragEnd={handleDragEnd}
                   wallDimensions={wallDimensions}
                   placedItems={placedItems}
+                  showLabel={false}
                 />
               );
             }
@@ -662,6 +669,7 @@ const FurnitureVisualizer: React.FC = () => {
                   onDragEnd={handleDragEnd}
                   wallDimensions={wallDimensions}
                   placedItems={placedItems}
+                  showLabel={false}
                 />
               );
             }

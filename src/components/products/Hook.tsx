@@ -17,6 +17,7 @@ interface HookProps {
     height: number; // in feet
   };
   placedItems?: FurnitureItemType[]; // All placed items for collision detection
+  showLabel?: boolean;
 }
 
 // Grid constants (in Three.js units - 1 unit = 1 foot)
@@ -34,6 +35,7 @@ const Hook: React.FC<HookProps> = ({
   onDragEnd,
   wallDimensions = { width: 8, height: 8 }, // Default to 8x8 feet
   placedItems = [], // Default to empty array
+  showLabel = true,
 }) => {
   const meshRef = useRef<Mesh>(null);
   const { camera, gl } = useThree();
@@ -376,17 +378,19 @@ const Hook: React.FC<HookProps> = ({
       )}
       
       {/* Item label */}
-      <Html
-        position={[width / 2, height + 0.3, 0]}
-        center
-        distanceFactor={10}
-        occlude
-      >
-        <div className={styles.label}>
-          <span className={styles.name}>{item.name}</span>
-          <span className={styles.price}>${item.price}</span>
-        </div>
-      </Html>
+      {showLabel && (
+        <Html
+          position={[width / 2, height + 0.3, 0]}
+          center
+          distanceFactor={10}
+          occlude
+        >
+          <div className={styles.label}>
+            <span className={styles.name}>{item.name}</span>
+            <span className={styles.price}>${item.price}</span>
+          </div>
+        </Html>
+      )}
     </group>
   );
 };

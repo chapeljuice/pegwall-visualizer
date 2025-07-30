@@ -16,17 +16,18 @@ interface BookshelfProps {
     height: number; // in feet
   };
   placedItems?: FurnitureItemType[]; // All placed items for collision detection
+  showLabel?: boolean;
 }
 
 const Bookshelf: React.FC<BookshelfProps> = (props) => {
-  const { item } = props;
+  const { item, showLabel = true } = props;
   const { width, height, depth } = item.dimensions;
 
   // Get preloaded wooden texture
   const woodenTexture = getWoodenTexture();
 
   return (
-    <BaseFurnitureItem {...props}>
+    <BaseFurnitureItem {...props} showLabel={showLabel}>
       {/* Bottom panel */}
       <Box
         args={[width, 0.083, depth]}

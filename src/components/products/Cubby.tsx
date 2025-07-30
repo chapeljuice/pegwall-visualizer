@@ -16,10 +16,11 @@ interface CubbyProps {
     height: number; // in feet
   };
   placedItems?: FurnitureItemType[]; // All placed items for collision detection
+  showLabel?: boolean;
 }
 
 const Cubby: React.FC<CubbyProps> = (props) => {
-  const { item } = props;
+  const { item, showLabel = true } = props;
   const { width, height, depth } = item.dimensions;
   const wallThickness = 0.083; // 1 inch = 0.083 feet
 
@@ -27,7 +28,7 @@ const Cubby: React.FC<CubbyProps> = (props) => {
   const woodenTexture = getWoodenTexture();
 
   return (
-    <BaseFurnitureItem {...props}>
+    <BaseFurnitureItem {...props} showLabel={showLabel}>
       {/* Interior surfaces - using the selected color */}
       {/* Left interior surface */}
       <Box

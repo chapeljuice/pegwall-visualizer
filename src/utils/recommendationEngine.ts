@@ -59,9 +59,12 @@ export const generateRecommendations = (
 ): Recommendation[] => {
   const recommendations: Recommendation[] = [];
   const actions = getUserActions();
+  
+  // Get dismissed recommendations from localStorage
+  const dismissedRecommendations = JSON.parse(localStorage.getItem('dismissed_recommendations') || '[]');
 
   // Rule 1: Suggest starting items for empty walls
-  if (placedItems.length === 0) {
+  if (placedItems.length === 0 && !dismissedRecommendations.includes('start-with-cubby')) {
     recommendations.push({
       id: 'start-with-cubby',
       type: 'suggestion',
@@ -78,7 +81,7 @@ export const generateRecommendations = (
   const hasTable = placedItems.some(item => item.name.includes('Table'));
   const hasHook = placedItems.some(item => item.name.includes('Hook'));
 
-  if (hasCubby && !hasTable) {
+  if (hasCubby && !hasTable && !dismissedRecommendations.includes('add-table')) {
     recommendations.push({
       id: 'add-table',
       type: 'combination',
@@ -90,7 +93,7 @@ export const generateRecommendations = (
     });
   }
 
-  if (hasCubby && !hasHook) {
+  if (hasCubby && !hasHook && !dismissedRecommendations.includes('add-hook')) {
     recommendations.push({
       id: 'add-hook',
       type: 'combination',
@@ -103,7 +106,7 @@ export const generateRecommendations = (
   }
 
   // Rule 3: Suggest based on wall dimensions
-  if (wallDimensions.height > 8) {
+  if (wallDimensions.height > 8 && !dismissedRecommendations.includes('tall-wall-bookshelf')) {
     recommendations.push({
       id: 'tall-wall-bookshelf',
       type: 'layout',
@@ -115,7 +118,7 @@ export const generateRecommendations = (
     });
   }
 
-  if (wallDimensions.width > 10) {
+  if (wallDimensions.width > 10 && !dismissedRecommendations.includes('wide-wall-magazine-rack')) {
     recommendations.push({
       id: 'wide-wall-magazine-rack',
       type: 'layout',
@@ -137,7 +140,7 @@ export const generateRecommendations = (
       const lastUsedColor = usedColors[usedColors.length - 1];
       const complementaryColor = getComplementaryColor(lastUsedColor, unusedColors);
       
-      if (complementaryColor) {
+      if (complementaryColor && !dismissedRecommendations.includes('color-harmony')) {
         recommendations.push({
           id: 'color-harmony',
           type: 'color',
@@ -156,7 +159,7 @@ export const generateRecommendations = (
   );
   
   const placedItemsCount = recentActions.filter(action => action.type === 'place_item').length;
-  if (placedItemsCount >= 3) {
+  if (placedItemsCount >= 3 && !dismissedRecommendations.includes('workspace-setup')) {
     recommendations.push({
       id: 'workspace-setup',
       type: 'layout',
