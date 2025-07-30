@@ -34,10 +34,10 @@ export const calculatePegHoleGrid = (wallWidthInches: number, wallHeightInches: 
   const verticalPositions: number[] = [];
 
   // Calculate number of peg holes based on wall dimensions
-  // Wall width = (horizontal holes × 8") + 16" margin
-  // Wall height = (vertical holes × 6") + 12" margin
-  const horizontalCount = Math.round((wallWidthInches - 16) / 8);
-  const verticalCount = Math.round((wallHeightInches - 12) / 6);
+  // Wall width = (horizontal holes × 8") + 6" margin (3" on each side)
+  // Wall height = (vertical holes × 6") + 4" margin (2" on top and bottom)
+  const horizontalCount = Math.round((wallWidthInches - 6) / 8);
+  const verticalCount = Math.round((wallHeightInches - 4) / 6);
 
   // Calculate margins to center the peg holes on the wall
   const totalHorizontalSpace = horizontalCount * PEG_HOLE_SPACING.horizontal;
@@ -194,8 +194,8 @@ export const calculateWallPrice = (horizontalHoles: number, verticalHoles: numbe
 
 // Get wall dimensions from peg hole counts
 export const getWallDimensionsFromHoles = (horizontalHoles: number, verticalHoles: number) => {
-  const widthInches = (horizontalHoles * 8) + 16; // 8" spacing + 16" margin
-  const heightInches = (verticalHoles * 6) + 12;  // 6" spacing + 12" margin
+  const widthInches = (horizontalHoles * 8) + 6; // 8" spacing + 6" margin (3" on each side)
+  const heightInches = (verticalHoles * 6) + 4;  // 6" spacing + 4" margin (2" on top and bottom)
   
   return {
     width: widthInches / 12, // Convert to feet

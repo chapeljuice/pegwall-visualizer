@@ -14,14 +14,14 @@ const WallDimensionsForm: React.FC<WallDimensionsFormProps> = ({ dimensions, onC
   const [isOpen, setIsOpen] = useState(false);
   
   // Calculate current peg hole counts from wall dimensions
-  // Wall width = (horizontal holes × 8") + 16" margin
-  // Wall height = (vertical holes × 6") + 12" margin
-  // So: horizontal holes = (wall width inches - 16) / 8
-  // And: vertical holes = (wall height inches - 12) / 6
+  // Wall width = (horizontal holes × 8") + 6" margin (3" on each side)
+  // Wall height = (vertical holes × 6") + 4" margin (2" on top and bottom)
+  // So: horizontal holes = (wall width inches - 6) / 8
+  // And: vertical holes = (wall height inches - 4) / 6
   const wallWidthInches = dimensions.width * 12;
   const wallHeightInches = dimensions.height * 12;
-  const horizontalHoles = Math.max(3, Math.round((wallWidthInches - 16) / 8));
-  const verticalHoles = Math.max(4, Math.round((wallHeightInches - 12) / 6));
+  const horizontalHoles = Math.max(3, Math.round((wallWidthInches - 6) / 8));
+  const verticalHoles = Math.max(4, Math.round((wallHeightInches - 4) / 6));
   
   const [localDimensions, setLocalDimensions] = useState({
     horizontalHoles: horizontalHoles,
@@ -31,8 +31,8 @@ const WallDimensionsForm: React.FC<WallDimensionsFormProps> = ({ dimensions, onC
   useEffect(() => {
     const wallWidthInches = dimensions.width * 12;
     const wallHeightInches = dimensions.height * 12;
-    const horizontalHoles = Math.max(3, Math.round((wallWidthInches - 16) / 8));
-    const verticalHoles = Math.max(4, Math.round((wallHeightInches - 12) / 6));
+    const horizontalHoles = Math.max(3, Math.round((wallWidthInches - 6) / 8));
+    const verticalHoles = Math.max(4, Math.round((wallHeightInches - 4) / 6));
     
     setLocalDimensions({
       horizontalHoles: horizontalHoles,
@@ -47,8 +47,8 @@ const WallDimensionsForm: React.FC<WallDimensionsFormProps> = ({ dimensions, onC
     // Convert peg holes back to wall dimensions
     // Each peg hole is 8 inches apart horizontally, 6 inches apart vertically
     // Add some margin for the wall edges
-    const newWidthInches = (newLocalDimensions.horizontalHoles * 8) + 16; // 16" margin
-    const newHeightInches = (newLocalDimensions.verticalHoles * 6) + 12; // 12" margin
+    const newWidthInches = (newLocalDimensions.horizontalHoles * 8) + 6; // 6" margin (3" on each side)
+    const newHeightInches = (newLocalDimensions.verticalHoles * 6) + 4; // 4" margin (2" on top and bottom)
     
     const newWidth = newWidthInches / 12; // Convert to feet
     const newHeight = newHeightInches / 12; // Convert to feet

@@ -23,8 +23,8 @@ const FurnitureVisualizer: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(true);
   const [wallDimensions, setWallDimensions] = useState({
-    width: 5.33, // 5.33 feet (5 horizontal slots × 8" + 16" margin = 56" = 5.33')
-    height: 5, // 5 feet (8 vertical slots × 6" + 12" margin = 60" = 5')
+    width: 3.83, // 3.83 feet (5 horizontal slots × 8" + 6" margin = 46" = 3.83')
+    height: 4.33, // 4.33 feet (8 vertical slots × 6" + 4" margin = 52" = 4.33')
   });
   const cameraRef = useRef<any>(null);
   const controlsRef = useRef<any>(null);
