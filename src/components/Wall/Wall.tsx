@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import HardwoodFloor from './HardwoodFloor';
 import styles from './Wall.module.css';
 import { getWoodenPlankTexture } from '../../utils/textureLoader';
+import { calculatePegHoleGrid, inchesToUnits, PEG_HOLE_SIZE } from '../../utils/pegHoleUtils';
 
 interface WallProps {
   dimensions: {
@@ -20,35 +21,23 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
   const wallHeight = height;
   const wallDepth = 0.1; // 1.2 inches thick
 
-  // Grid constants (in Three.js units)
-  const GRID_HORIZONTAL_SPACING = 0.67; // 8 inches = 0.67 feet
-  const GRID_VERTICAL_SPACING = 0.5;   // 6 inches = 0.5 feet
   const WALL_POSITION = -2; // Z position of the wall
 
   // Get preloaded texture
   const wallTexture = getWoodenPlankTexture();
 
-  // Calculate grid positions
-  const horizontalPositions: number[] = [];
-  const verticalPositions: number[] = [];
-
-  // Generate horizontal positions (skip first column) - same as FurnitureVisualizer
-  const horizontalCount = Math.floor((wallWidth - GRID_HORIZONTAL_SPACING) / GRID_HORIZONTAL_SPACING);
-  for (let i = 1; i <= horizontalCount; i++) {
-    const x = -wallWidth / 2 + (i * GRID_HORIZONTAL_SPACING);
-    horizontalPositions.push(Number(x.toFixed(2)));
-  }
-
-  // Generate vertical positions (skip bottom row) - same as FurnitureVisualizer
-  const verticalCount = Math.floor((wallHeight - GRID_VERTICAL_SPACING) / GRID_VERTICAL_SPACING);
-  for (let i = 1; i <= verticalCount; i++) {
-    const y = i * GRID_VERTICAL_SPACING;
-    verticalPositions.push(Number(y.toFixed(2)));
-  }
+  // Convert wall dimensions to inches and calculate peg hole grid
+  const wallWidthInches = wallWidth * 12;
+  const wallHeightInches = wallHeight * 12;
+  const { horizontalPositions, verticalPositions } = calculatePegHoleGrid(wallWidthInches, wallHeightInches);
+  
+  // Convert peg hole positions to Three.js units
+  const horizontalPositionsUnits = horizontalPositions.map(inchesToUnits);
+  const verticalPositionsUnits = verticalPositions.map(inchesToUnits);
 
   return (
     <>
-      {/* Back wall (pegboard) */}
+      {/* Back wall (Kerf wall) */}
       <Plane
         args={[wallWidth, wallHeight]}
         position={[0, wallHeight / 2, WALL_POSITION]}
@@ -66,11 +55,11 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
 
       {/* Peg holes */}
       <group>
-        {horizontalPositions.map((x) =>
-          verticalPositions.map((y) => (
+        {horizontalPositionsUnits.map((x) =>
+          verticalPositionsUnits.map((y) => (
             <Plane
               key={`hole-${x}-${y}`}
-              args={[0.083, 0.25]} // 1" wide x 3" tall
+              args={[inchesToUnits(PEG_HOLE_SIZE.width), inchesToUnits(PEG_HOLE_SIZE.height)]} // 1" wide x 3" tall
               position={[x, y, WALL_POSITION + 0.01]}
               rotation={[0, 0, 0]}
             >

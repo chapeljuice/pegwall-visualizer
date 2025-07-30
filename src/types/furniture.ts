@@ -3,16 +3,19 @@ export interface FurnitureItem {
   name: string;
   type: 'shelf' | 'table' | 'chair' | 'cabinet' | 'desk' | 'storage' | 'hook';
   dimensions: {
-    width: number;
-    height: number;
-    depth: number;
+    width: number; // in inches
+    height: number; // in inches
+    depth: number; // in inches
   };
   color: string;
   material: 'plywood' | 'oak' | 'walnut' | 'maple' | 'metal';
   price: number;
   position: [number, number, number];
   rotation?: [number, number, number];
-  pegHolesToSpan?: number; // How many peg holes this furniture should span horizontally
+  pegHolesToSpan: {
+    horizontal: number; // How many peg holes this furniture spans horizontally
+    vertical: number;   // How many peg holes this furniture spans vertically
+  };
 }
 
 export interface FurnitureCategory {
@@ -25,12 +28,15 @@ export interface FurnitureVariant {
   id: string;
   name: string;
   dimensions: {
-    width: number;
-    height: number;
-    depth: number;
+    width: number; // in inches
+    height: number; // in inches
+    depth: number; // in inches
   };
   price: number;
-  pegHolesToSpan: number;
+  pegHolesToSpan: {
+    horizontal: number;
+    vertical: number;
+  };
 }
 
 export interface FurnitureColor {

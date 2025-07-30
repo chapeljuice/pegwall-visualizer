@@ -3,6 +3,7 @@ import { Box } from '@react-three/drei';
 import BaseFurnitureItem from './BaseFurnitureItem';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import { getWoodenTexture } from '../../utils/textureLoader';
+import { convertDimensionsToUnits } from '../../utils/pegHoleUtils';
 
 interface EaselProps {
   item: FurnitureItemType;
@@ -30,7 +31,7 @@ const Easel: React.FC<EaselProps> = ({
   placedItems,
   showLabel = true,
 }) => {
-  const { width, height, depth } = item.dimensions;
+  const { width, height, depth } = convertDimensionsToUnits(item.dimensions);
 
   // Get preloaded wooden texture
   const woodenTexture = getWoodenTexture();
@@ -50,7 +51,7 @@ const Easel: React.FC<EaselProps> = ({
       {/* Main easel structure - simple rectangular shape */}
       <group>
         {/* Back panel (wooden texture) */}
-        <Box args={[width, height, 0.05]} position={[width/2, height/2, -depth/2 + 0.025]}>
+        <Box args={[width, height, 0.05]} position={[width/2, height/2, 0.025]}>
           <meshStandardMaterial
             map={woodenTexture}
             roughness={0.7}
@@ -59,7 +60,7 @@ const Easel: React.FC<EaselProps> = ({
         </Box>
         
         {/* Angled front panel (colored) - angled at 10 degrees upward */}
-        <group rotation={[-0.175, 0, 0]} position={[width/2, height/2, depth/2 - 0.025]}>
+        <group rotation={[-0.175, 0, 0]} position={[width/2, height/2, depth - 0.025]}>
           <Box args={[width, height, 0.05]} position={[0, 0, 0]}>
             <meshStandardMaterial
               color={item.color}
@@ -70,7 +71,7 @@ const Easel: React.FC<EaselProps> = ({
         </group>
         
         {/* Left side panel (wooden texture) - part of main structure */}
-        <Box args={[0.05, height, depth]} position={[0.025, height/2, 0]}>
+        <Box args={[0.05, height, depth]} position={[0.025, height/2, depth/2]}>
           <meshStandardMaterial
             map={woodenTexture}
             roughness={0.7}
@@ -79,7 +80,7 @@ const Easel: React.FC<EaselProps> = ({
         </Box>
         
         {/* Right side panel (wooden texture) - part of main structure */}
-        <Box args={[0.05, height, depth]} position={[width - 0.025, height/2, 0]}>
+        <Box args={[0.05, height, depth]} position={[width - 0.025, height/2, depth/2]}>
           <meshStandardMaterial
             map={woodenTexture}
             roughness={0.7}
@@ -88,7 +89,7 @@ const Easel: React.FC<EaselProps> = ({
         </Box>
         
         {/* Bottom panel (wooden texture) */}
-        <Box args={[width, 0.05, depth]} position={[width/2, 0.025, 0]}>
+        <Box args={[width, 0.05, depth]} position={[width/2, 0.025, depth/2]}>
           <meshStandardMaterial
             map={woodenTexture}
             roughness={0.7}

@@ -100,6 +100,29 @@
   border: 1px solid rgba(0, 123, 255, 0.2);
 }
 
+.priceDisplay {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  border-radius: 6px;
+  margin-top: 16px;
+}
+
+.priceLabel {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.priceValue {
+  font-weight: 700;
+  color: #28a745;
+  font-size: 16px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .container {

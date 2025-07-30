@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { Mesh, Vector3, Vector2, Raycaster, Plane } from 'three';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
+import { calculateFurniturePosition, isValidFurniturePosition, inchesToUnits, convertDimensionsToUnits } from '../../utils/pegHoleUtils';
 import styles from './FurnitureItem.module.css';
 
 interface BaseFurnitureItemProps {
@@ -45,7 +46,7 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
   const raycaster = useRef(new Raycaster());
   const mouse = useRef(new Vector2());
 
-  const { width, height, depth } = item.dimensions;
+  const { width, height, depth } = convertDimensionsToUnits(item.dimensions);
   const [x, y, z] = item.position;
 
   // Wall boundaries (in Three.js units)
@@ -84,152 +85,91 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
       if (otherItem.id === item.id) return false; // Skip self
       
       const [ox, oy] = otherItem.position;
+      // Convert other item dimensions to Three.js units for collision detection
+      const otherItemDimensions = convertDimensionsToUnits(otherItem.dimensions);
+      
       // Other items also use top-left corner positioning
       const otherRect = {
         x: ox,
         y: oy,
-        width: otherItem.dimensions.width,
-        height: otherItem.dimensions.height,
+        width: otherItemDimensions.width,
+        height: otherItemDimensions.height,
       };
 
       return rectanglesOverlap(currentRect, otherRect);
     });
   };
 
-  // Function to snap position to grid
+  // Function to snap position to grid using new peg hole utilities
   const snapToGrid = useCallback((position: Vector3): [number, number, number] => {
-    // Calculate the grid position that the furniture should snap to
-    // The furniture should align its top-left corner with the peg hole positions
-    const wallWidth = wallDimensions.width;
-    const wallHeight = wallDimensions.height;
+    // Convert wall dimensions from feet to inches
+    const wallWidthInches = wallDimensions.width * 12;
+    const wallHeightInches = wallDimensions.height * 12;
     
-    // Generate the same grid positions as the Wall component
-    const horizontalPositions: number[] = [];
-    const verticalPositions: number[] = [];
-
-    // Generate horizontal positions (skip first column) - same as Wall component
-    const horizontalCount = Math.floor((wallWidth - GRID_HORIZONTAL_SPACING) / GRID_HORIZONTAL_SPACING);
-    for (let i = 1; i <= horizontalCount; i++) {
-      const x = -wallWidth / 2 + (i * GRID_HORIZONTAL_SPACING);
-      horizontalPositions.push(Number(x.toFixed(2)));
-    }
-
-    // Generate vertical positions (skip bottom row) - same as Wall component
-    const verticalCount = Math.floor((wallHeight - GRID_VERTICAL_SPACING) / GRID_VERTICAL_SPACING);
-    for (let i = 1; i <= verticalCount; i++) {
-      const y = i * GRID_VERTICAL_SPACING;
-      verticalPositions.push(Number(y.toFixed(2)));
-    }
-
-    // Find the closest grid position
-    // The furniture should align its left edge with the left edge of the first peg hole
-    // and its right edge with the right edge of the last peg hole it covers
-    const pegHoleWidth = 0.083; // 1 inch
-    const pegHoleHeight = 0.25; // 3 inches
+    // Convert furniture dimensions from Three.js units to inches
+    const furnitureWidthInches = width * 12;
+    const furnitureHeightInches = height * 12;
     
-    let closestX = horizontalPositions[0] - pegHoleWidth / 2;
-    let closestY = verticalPositions[0] - pegHoleHeight / 2;
-    let minDistance = Infinity;
+    // Use the new peg hole utilities to calculate optimal position
+    const [snappedX, snappedY] = calculateFurniturePosition(
+      furnitureWidthInches,
+      furnitureHeightInches,
+      item.pegHolesToSpan,
+      [position.x, position.y],
+      wallWidthInches,
+      wallHeightInches
+    );
+    
+    return [snappedX, snappedY, WALL_POSITION];
+  }, [wallDimensions, width, height, item.pegHolesToSpan]);
 
-          for (const x of horizontalPositions) {
-        for (const y of verticalPositions) {
-          // Calculate the left edge of the first peg hole
-          const firstPegHoleLeft = x - pegHoleWidth / 2;
-          const pegHoleTopLeftY = y - pegHoleHeight / 2;
-          
-          // Use the furniture's pegHolesToSpan property or default to 1
-          const pegHolesToSpan = item.pegHolesToSpan || 1;
-          
-          // Calculate the right edge position to ensure it covers the last peg hole
-          const lastPegHoleIndex = horizontalPositions.indexOf(x) + pegHolesToSpan - 1;
-          if (lastPegHoleIndex < horizontalPositions.length) {
-            const lastPegHoleX = horizontalPositions[lastPegHoleIndex];
-            const lastPegHoleRight = lastPegHoleX + pegHoleWidth / 2;
-            
-            // Position furniture so its right edge aligns with the right edge of the last peg hole
-            const furnitureX = lastPegHoleRight - width;
-            const furnitureY = pegHoleTopLeftY;
-            
-            const distance = Math.sqrt((position.x - furnitureX) ** 2 + (position.y - furnitureY) ** 2);
-            if (distance < minDistance) {
-              minDistance = distance;
-              closestX = furnitureX;
-              closestY = furnitureY;
-            }
-          }
-      }
-    }
-
-    return [closestX, closestY, WALL_POSITION];
-  }, [wallDimensions, GRID_HORIZONTAL_SPACING, GRID_VERTICAL_SPACING]);
-
-  // Function to constrain position within wall boundaries
+  // Function to constrain position within wall boundaries using new peg hole utilities
   const constrainToWall = useCallback((position: [number, number, number]): [number, number, number] => {
     const [x, y, z] = position;
     
-    // Generate the same grid positions as the Wall component
-    const horizontalPositions: number[] = [];
-    const verticalPositions: number[] = [];
-
-    // Generate horizontal positions (skip first column) - same as Wall component
-    const horizontalCount = Math.floor((WALL_WIDTH - GRID_HORIZONTAL_SPACING) / GRID_HORIZONTAL_SPACING);
-    for (let i = 1; i <= horizontalCount; i++) {
-      const gridX = -WALL_WIDTH / 2 + (i * GRID_HORIZONTAL_SPACING);
-      horizontalPositions.push(Number(gridX.toFixed(2)));
-    }
-
-    // Generate vertical positions (skip bottom row) - same as Wall component
-    const verticalCount = Math.floor((WALL_HEIGHT - GRID_VERTICAL_SPACING) / GRID_VERTICAL_SPACING);
-    for (let i = 1; i <= verticalCount; i++) {
-      const gridY = i * GRID_VERTICAL_SPACING;
-      verticalPositions.push(Number(gridY.toFixed(2)));
-    }
-
-    // Find the closest valid grid position that keeps the furniture within bounds
-    // The furniture should align its right edge with the right edge of the last peg hole it covers
-    const pegHoleWidth = 0.083; // 1 inch
-    const pegHoleHeight = 0.25; // 3 inches
+    // Convert wall dimensions from feet to inches
+    const wallWidthInches = WALL_WIDTH * 12;
+    const wallHeightInches = WALL_HEIGHT * 12;
     
-    let closestX = horizontalPositions[0] - pegHoleWidth / 2;
-    let closestY = verticalPositions[0] - pegHoleHeight / 2;
-    let minDistance = Infinity;
-
-    for (const gridX of horizontalPositions) {
-      for (const gridY of verticalPositions) {
-        // Use the furniture's pegHolesToSpan property or default to 1
-        const pegHolesToSpan = item.pegHolesToSpan || 1;
-        
-        // Calculate the right edge position to ensure it covers the last peg hole
-        const lastPegHoleIndex = horizontalPositions.indexOf(gridX) + pegHolesToSpan - 1;
-        if (lastPegHoleIndex < horizontalPositions.length) {
-          const lastPegHoleX = horizontalPositions[lastPegHoleIndex];
-          const lastPegHoleRight = lastPegHoleX + pegHoleWidth / 2;
-          
-          // Position furniture so its right edge aligns with the right edge of the last peg hole
-          const furnitureX = lastPegHoleRight - width;
-          const furnitureY = gridY - pegHoleHeight / 2;
-          
-          // Check if this position would keep the furniture within wall boundaries
-          if (
-            furnitureX >= WALL_LEFT + GRID_HORIZONTAL_SPACING &&
-            furnitureX + width <= WALL_RIGHT - GRID_HORIZONTAL_SPACING &&
-            furnitureY >= WALL_BOTTOM + GRID_VERTICAL_SPACING &&
-            furnitureY + height <= WALL_TOP - GRID_VERTICAL_SPACING
-          ) {
-            const distance = Math.sqrt((x - furnitureX) ** 2 + (y - furnitureY) ** 2);
-            if (distance < minDistance) {
-              minDistance = distance;
-              closestX = furnitureX;
-              closestY = furnitureY;
-            }
-          }
+    // Convert furniture dimensions from Three.js units to inches
+    const furnitureWidthInches = width * 12;
+    const furnitureHeightInches = height * 12;
+    
+    // Convert other furniture positions to the format expected by isValidFurniturePosition
+    const otherFurniture = placedItems
+      .filter(other => other.id !== item.id)
+      .map(other => ({
+        position: [other.position[0], other.position[1]] as [number, number], // Only use x, y coordinates
+        dimensions: {
+          width: other.dimensions.width * 12, // Convert to inches
+          height: other.dimensions.height * 12,
         }
-      }
+      }));
+    
+    // Check if current position is valid
+    if (isValidFurniturePosition(
+      furnitureWidthInches,
+      furnitureHeightInches,
+      [x, y],
+      wallWidthInches,
+      wallHeightInches,
+      otherFurniture
+    )) {
+      return [x, y, z];
     }
-
-    // Position furniture so its back wall is at the wall position
-    return [closestX, closestY, WALL_POSITION + depth / 2];
-  }, [width, height, depth, WALL_LEFT, WALL_RIGHT, WALL_BOTTOM, WALL_TOP, WALL_WIDTH, WALL_HEIGHT, GRID_HORIZONTAL_SPACING, GRID_VERTICAL_SPACING, WALL_POSITION]);
+    
+    // If not valid, find the closest valid position
+    const [constrainedX, constrainedY] = calculateFurniturePosition(
+      furnitureWidthInches,
+      furnitureHeightInches,
+      item.pegHolesToSpan,
+      [x, y],
+      wallWidthInches,
+      wallHeightInches
+    );
+    
+    return [constrainedX, constrainedY, WALL_POSITION];
+  }, [WALL_WIDTH, WALL_HEIGHT, width, height, depth, item.pegHolesToSpan, placedItems, item.id]);
 
   // Function to get intersection with wall plane
   const getWallIntersection = useCallback((mouseX: number, mouseY: number): Vector3 | null => {
@@ -341,7 +281,7 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
       
       {/* Selection indicator - positioned at center to match furniture bounds */}
       {isSelected && (
-        <group position={[width / 2, height / 2, 0]}>
+        <group position={[width / 2, height / 2, depth / 2]}>
           <mesh>
             <boxGeometry args={[width, height, depth]} />
             <meshStandardMaterial
@@ -356,7 +296,7 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
       
       {/* Overlap indicator (red glow when overlapping) - positioned at center to match furniture bounds */}
       {isOverlapping && (
-        <group position={[width / 2, height / 2, 0]}>
+        <group position={[width / 2, height / 2, depth / 2]}>
           <mesh>
             <boxGeometry args={[width, height, depth]} />
             <meshStandardMaterial

@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Box, Html } from '@react-three/drei';
 import { Mesh, Vector3, Vector2, Raycaster, Plane } from 'three';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
+import { convertDimensionsToUnits } from '../../utils/pegHoleUtils';
 import styles from './FurnitureItem.module.css';
 
 interface HookProps {
@@ -44,7 +45,7 @@ const Hook: React.FC<HookProps> = ({
   const raycaster = useRef(new Raycaster());
   const mouse = useRef(new Vector2());
 
-  const { width, height, depth } = item.dimensions;
+  const { width, height, depth } = convertDimensionsToUnits(item.dimensions);
   const [x, y, z] = item.position;
 
   // Wall boundaries (in Three.js units)

@@ -3,6 +3,7 @@ import { Box } from '@react-three/drei';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import BaseFurnitureItem from './BaseFurnitureItem';
 import { getWoodenTexture } from '../../utils/textureLoader';
+import { convertDimensionsToUnits } from '../../utils/pegHoleUtils';
 
 interface CubbyProps {
   item: FurnitureItemType;
@@ -21,7 +22,7 @@ interface CubbyProps {
 
 const Cubby: React.FC<CubbyProps> = (props) => {
   const { item, showLabel = true } = props;
-  const { width, height, depth } = item.dimensions;
+  const { width, height, depth } = convertDimensionsToUnits(item.dimensions);
   const wallThickness = 0.083; // 1 inch = 0.083 feet
 
   // Get preloaded wooden texture
@@ -33,7 +34,7 @@ const Cubby: React.FC<CubbyProps> = (props) => {
       {/* Left interior surface */}
       <Box
         args={[0.01, height - wallThickness * 2, depth]}
-        position={[wallThickness, height / 2, 0]}
+        position={[wallThickness, height / 2, depth / 2]}
       >
         <meshStandardMaterial
           color={item.color}
@@ -45,7 +46,7 @@ const Cubby: React.FC<CubbyProps> = (props) => {
       {/* Right interior surface */}
       <Box
         args={[0.01, height - wallThickness * 2, depth]}
-        position={[width - wallThickness, height / 2, 0]}
+        position={[width - wallThickness, height / 2, depth / 2]}
       >
         <meshStandardMaterial
           color={item.color}
@@ -57,7 +58,7 @@ const Cubby: React.FC<CubbyProps> = (props) => {
       {/* Top interior surface */}
       <Box
         args={[width - wallThickness * 2, 0.01, depth]}
-        position={[width / 2, height - wallThickness, 0]}
+        position={[width / 2, height - wallThickness, depth / 2]}
       >
         <meshStandardMaterial
           color={item.color}
@@ -69,7 +70,7 @@ const Cubby: React.FC<CubbyProps> = (props) => {
       {/* Bottom interior surface */}
       <Box
         args={[width - wallThickness * 2, 0.01, depth]}
-        position={[width / 2, wallThickness, 0]}
+        position={[width / 2, wallThickness, depth / 2]}
       >
         <meshStandardMaterial
           color={item.color}
@@ -82,7 +83,7 @@ const Cubby: React.FC<CubbyProps> = (props) => {
       {/* Left wall (outside) */}
       <Box
         args={[wallThickness, height, depth]}
-        position={[wallThickness / 2, height / 2, 0]}
+        position={[wallThickness / 2, height / 2, depth / 2]}
       >
         <meshStandardMaterial
           map={woodenTexture}
@@ -94,7 +95,7 @@ const Cubby: React.FC<CubbyProps> = (props) => {
       {/* Right wall (outside) */}
       <Box
         args={[wallThickness, height, depth]}
-        position={[width - wallThickness / 2, height / 2, 0]}
+        position={[width - wallThickness / 2, height / 2, depth / 2]}
       >
         <meshStandardMaterial
           map={woodenTexture}
@@ -106,7 +107,7 @@ const Cubby: React.FC<CubbyProps> = (props) => {
       {/* Top wall (outside) */}
       <Box
         args={[width, wallThickness, depth]}
-        position={[width / 2, height - wallThickness / 2, 0]}
+        position={[width / 2, height - wallThickness / 2, depth / 2]}
       >
         <meshStandardMaterial
           map={woodenTexture}
@@ -118,7 +119,7 @@ const Cubby: React.FC<CubbyProps> = (props) => {
       {/* Bottom wall (outside) */}
       <Box
         args={[width, wallThickness, depth]}
-        position={[width / 2, wallThickness / 2, 0]}
+        position={[width / 2, wallThickness / 2, depth / 2]}
       >
         <meshStandardMaterial
           map={woodenTexture}

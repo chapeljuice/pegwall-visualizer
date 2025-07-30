@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FurnitureItem as FurnitureItemType, FurnitureGroup, SHARED_COLORS } from '../../types/furniture';
 import FurnitureGroupCard from './FurnitureGroupCard';
+import { calculateWallPrice } from '../../utils/pegHoleUtils';
 import styles from './FurniturePanel.module.css';
 
 interface FurniturePanelProps {
@@ -10,6 +11,7 @@ interface FurniturePanelProps {
   onRemoveItem: (id: string) => void;
   onSelectItem: (item: FurnitureItemType | null) => void;
   onClearWall: () => void;
+  wallDimensions: { width: number; height: number };
 }
 
 const FurniturePanel: React.FC<FurniturePanelProps> = ({
@@ -19,6 +21,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
   onRemoveItem,
   onSelectItem,
   onClearWall,
+  wallDimensions,
 }) => {
   const [activeTab, setActiveTab] = useState<'available' | 'placed'>('available');
   const [sharedSelectedColor, setSharedSelectedColor] = useState(SHARED_COLORS[0]); // Default to first color
@@ -37,44 +40,44 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
         {
           id: '10x10',
           name: '10" × 10"',
-          dimensions: { width: 0.83, height: 0.83, depth: 0.83 },
+          dimensions: { width: 10, height: 10, depth: 10 },
           price: 0,
-          pegHolesToSpan: 2,
+          pegHolesToSpan: { horizontal: 2, vertical: 2 },
         },
         {
           id: '10x16',
           name: '10" × 16"',
-          dimensions: { width: 0.83, height: 1.67, depth: 0.83 },
+          dimensions: { width: 10, height: 16, depth: 10 },
           price: 60,
-          pegHolesToSpan: 2,
+          pegHolesToSpan: { horizontal: 2, vertical: 3 },
         },
         {
           id: '20x10',
           name: '20" × 10"',
-          dimensions: { width: 1.67, height: 0.83, depth: 0.83 },
+          dimensions: { width: 20, height: 10, depth: 10 },
           price: 100,
-          pegHolesToSpan: 3,
+          pegHolesToSpan: { horizontal: 3, vertical: 2 },
         },
         {
           id: '20x16',
           name: '20" × 16"',
-          dimensions: { width: 1.67, height: 1.33, depth: 0.83 },
+          dimensions: { width: 20, height: 16, depth: 10 },
           price: 165,
-          pegHolesToSpan: 3,
+          pegHolesToSpan: { horizontal: 3, vertical: 3 },
         },
         {
           id: '40x10',
           name: '39" × 10"',
-          dimensions: { width: 3.33, height: 0.83, depth: 0.83 },
+          dimensions: { width: 39, height: 10, depth: 10 },
           price: 305,
-          pegHolesToSpan: 5,
+          pegHolesToSpan: { horizontal: 5, vertical: 2 },
         },
         {
           id: '39x16',
           name: '40" × 16"',
-          dimensions: { width: 3.33, height: 1.33, depth: 0.83 },
+          dimensions: { width: 40, height: 16, depth: 10 },
           price: 365,
-          pegHolesToSpan: 4,
+          pegHolesToSpan: { horizontal: 5, vertical: 3 },
         },
       ],
       colors: SHARED_COLORS,
@@ -91,9 +94,9 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
         {
           id: 'standard',
           name: 'Standard',
-          dimensions: { width: 0.083, height: 0.67, depth: 0.42 },
+          dimensions: { width: 1, height: 8, depth: 5 },
           price: 0,
-          pegHolesToSpan: 1,
+          pegHolesToSpan: { horizontal: 1, vertical: 1 },
         },
       ],
       colors: [
@@ -112,9 +115,9 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
         {
           id: 'standard',
           name: 'Standard',
-          dimensions: { width: 3.17, height: 2.42, depth: 5.0 },
+          dimensions: { width: 24, height: 18, depth: 24 }, // 24" × 18" × 24"
           price: 0,
-          pegHolesToSpan: 4,
+          pegHolesToSpan: { horizontal: 3, vertical: 3 },
         },
       ],
       colors: SHARED_COLORS,
@@ -131,16 +134,16 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
         {
           id: '2-slot',
           name: '2 Slot',
-          dimensions: { width: 0.67, height: 0.67, depth: 0.5 }, // 8" × 10" × 6" in feet
+          dimensions: { width: 8, height: 8, depth: 6 }, // 8" × 8" × 6"
           price: 0,
-          pegHolesToSpan: 2,
+          pegHolesToSpan: { horizontal: 2, vertical: 2 },
         },
         {
           id: '3-slot',
           name: '3 Slot',
-          dimensions: { width: 1.33, height: 0.67, depth: 0.5 }, // 16" × 10" × 6" in feet
+          dimensions: { width: 16, height: 8, depth: 6 }, // 16" × 8" × 6"
           price: 60,
-          pegHolesToSpan: 3,
+          pegHolesToSpan: { horizontal: 3, vertical: 2 },
         },
       ],
       colors: [
@@ -159,23 +162,23 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
         {
           id: '2-slot',
           name: '2 Slot',
-          dimensions: { width: 0.67, height: 0.83, depth: 0.83 }, // 8" × 10" × 10" in feet
+          dimensions: { width: 8, height: 10, depth: 10 }, // 8" × 10" × 10"
           price: 0,
-          pegHolesToSpan: 2,
+          pegHolesToSpan: { horizontal: 2, vertical: 2 },
         },
         {
           id: '3-slot',
           name: '3 Slot',
-          dimensions: { width: 1.33, height: 0.83, depth: 0.83 }, // 16" × 10" × 10" in feet
+          dimensions: { width: 16, height: 10, depth: 10 }, // 16" × 10" × 10"
           price: 65,
-          pegHolesToSpan: 3,
+          pegHolesToSpan: { horizontal: 3, vertical: 2 },
         },
         {
           id: '4-slot',
           name: '4 Slot',
-          dimensions: { width: 2.0, height: 0.83, depth: 0.83 }, // 24" × 10" × 10" in feet
+          dimensions: { width: 24, height: 10, depth: 10 }, // 24" × 10" × 10"
           price: 115,
-          pegHolesToSpan: 4,
+          pegHolesToSpan: { horizontal: 4, vertical: 2 },
         },
       ],
       colors: [
@@ -194,16 +197,21 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
         {
           id: 'standard',
           name: 'Standard',
-          dimensions: { width: 2.5, height: 2.17, depth: 0.42 }, // 30" × 26" × 5" in feet
+          dimensions: { width: 30, height: 26, depth: 5 }, // 30" × 26" × 5"
           price: 0,
-          pegHolesToSpan: 3,
+          pegHolesToSpan: { horizontal: 4, vertical: 3 },
         },
       ],
       colors: SHARED_COLORS,
     },
   ];
 
-  const totalPrice = placedItems.reduce((sum, item) => sum + item.price, 0);
+  // Calculate wall price based on current dimensions
+  const wallHorizontalHoles = Math.round((wallDimensions.width * 12 - 16) / 8);
+  const wallVerticalHoles = Math.round((wallDimensions.height * 12 - 12) / 6);
+  const wallPrice = calculateWallPrice(wallHorizontalHoles, wallVerticalHoles);
+  
+  const totalPrice = placedItems.reduce((sum, item) => sum + item.price, 0) + wallPrice;
 
   // Function to get the appropriate image for each furniture item
   const getItemImage = (itemName: string): string => {
@@ -242,10 +250,10 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        <h2>Peg Hole Wall Designer</h2>
+        <h2>Kerf Wall Designer</h2>
         <div className={styles.instructions}>
           <p>Click a product group to see customization options. Drag placed items to move them around!</p>
-          <p>Furniture snaps to a 16" × 8" grid.</p>
+          <p>Furniture snaps to a 16" × 8" slot grid.</p>
         </div>
         <div className={styles.tabs}>
           <button
@@ -324,6 +332,12 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
                     </button>
                   </div>
                 ))}
+                <div className={styles.wallPrice}>
+                  <div className={styles.wallPriceInfo}>
+                    <strong>Kerf Wall ({wallHorizontalHoles} × {wallVerticalHoles} holes)</strong>
+                    <span>{formatCurrency(wallPrice)}</span>
+                  </div>
+                </div>
                 <div className={styles.totalPrice}>
                   <strong>Total: {formatCurrency(totalPrice)}</strong>
                 </div>

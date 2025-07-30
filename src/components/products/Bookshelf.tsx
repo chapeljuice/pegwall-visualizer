@@ -3,6 +3,7 @@ import { Box } from '@react-three/drei';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import BaseFurnitureItem from './BaseFurnitureItem';
 import { getWoodenTexture } from '../../utils/textureLoader';
+import { convertDimensionsToUnits } from '../../utils/pegHoleUtils';
 
 interface BookshelfProps {
   item: FurnitureItemType;
@@ -21,7 +22,7 @@ interface BookshelfProps {
 
 const Bookshelf: React.FC<BookshelfProps> = (props) => {
   const { item, showLabel = true } = props;
-  const { width, height, depth } = item.dimensions;
+  const { width, height, depth } = convertDimensionsToUnits(item.dimensions);
 
   // Get preloaded wooden texture
   const woodenTexture = getWoodenTexture();
@@ -31,7 +32,7 @@ const Bookshelf: React.FC<BookshelfProps> = (props) => {
       {/* Bottom panel */}
       <Box
         args={[width, 0.083, depth]}
-        position={[width / 2, 0.0415, 0]}
+        position={[width / 2, 0.0415, depth / 2]}
       >
         <meshStandardMaterial
           map={woodenTexture}
@@ -43,7 +44,7 @@ const Bookshelf: React.FC<BookshelfProps> = (props) => {
       {/* Left side panel */}
       <Box
         args={[0.083, height, depth]}
-        position={[0.0415, height / 2, 0]}
+        position={[0.0415, height / 2, depth / 2]}
       >
         <meshStandardMaterial
           map={woodenTexture}
@@ -55,7 +56,7 @@ const Bookshelf: React.FC<BookshelfProps> = (props) => {
       {/* Right side panel */}
       <Box
         args={[0.083, height, depth]}
-        position={[width - 0.0415, height / 2, 0]}
+        position={[width - 0.0415, height / 2, depth / 2]}
       >
         <meshStandardMaterial
           map={woodenTexture}

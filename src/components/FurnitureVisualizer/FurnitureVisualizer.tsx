@@ -12,6 +12,7 @@ import FurniturePanel from '../FurniturePanel/FurniturePanel';
 import WallDimensionsForm from '../WallDimensionsForm/WallDimensionsForm';
 import Recommendations from '../Recommendations/Recommendations';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
+import { convertDimensionsToUnits, calculatePegHoleGrid, inchesToUnits, calculateWallPrice } from '../../utils/pegHoleUtils';
 import { useTextureLoader } from '../../hooks/useTextureLoader';
 import { generateRecommendations, trackUserAction } from '../../utils/recommendationEngine';
 import styles from './FurnitureVisualizer.module.css';
@@ -22,8 +23,8 @@ const FurnitureVisualizer: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(true);
   const [wallDimensions, setWallDimensions] = useState({
-    width: 8, // 8 feet
-    height: 8, // 8 feet
+    width: 5.33, // 5.33 feet (5 horizontal slots × 8" + 16" margin = 56" = 5.33')
+    height: 5, // 5 feet (8 vertical slots × 6" + 12" margin = 60" = 5')
   });
   const cameraRef = useRef<any>(null);
   const controlsRef = useRef<any>(null);
@@ -65,22 +66,28 @@ const FurnitureVisualizer: React.FC = () => {
   // Function to check if a position conflicts with existing items
   const hasCollision = (newItem: FurnitureItemType, position: [number, number, number]): boolean => {
     const [x, y] = position;
+    // Convert dimensions to Three.js units for collision detection
+    const newItemDimensions = convertDimensionsToUnits(newItem.dimensions);
+    
     // Position is now the top-left corner, so the rectangle starts at position
     const newRect = {
       x: x,
       y: y,
-      width: newItem.dimensions.width,
-      height: newItem.dimensions.height,
+      width: newItemDimensions.width,
+      height: newItemDimensions.height,
     };
 
     return placedItems.some(existingItem => {
       const [ex, ey] = existingItem.position;
+      // Convert existing item dimensions to Three.js units
+      const existingItemDimensions = convertDimensionsToUnits(existingItem.dimensions);
+      
       // Existing items also use top-left corner positioning
       const existingRect = {
         x: ex,
         y: ey,
-        width: existingItem.dimensions.width,
-        height: existingItem.dimensions.height,
+        width: existingItemDimensions.width,
+        height: existingItemDimensions.height,
       };
 
       return rectanglesOverlap(newRect, existingRect);
@@ -92,39 +99,35 @@ const FurnitureVisualizer: React.FC = () => {
     const wallWidth = wallDimensions.width;
     const wallHeight = wallDimensions.height;
     
-    // Generate the same grid positions as the Wall component
-    const horizontalPositions: number[] = [];
-    const verticalPositions: number[] = [];
-
-    // Generate horizontal positions (skip first column) - same as Wall component
-    const horizontalCount = Math.floor((wallWidth - GRID_HORIZONTAL_SPACING) / GRID_HORIZONTAL_SPACING);
-    for (let i = 1; i <= horizontalCount; i++) {
-      const x = -wallWidth / 2 + (i * GRID_HORIZONTAL_SPACING);
-      horizontalPositions.push(Number(x.toFixed(2)));
-    }
-
-    // Generate vertical positions (skip bottom row) - same as Wall component
-    const verticalCount = Math.floor((wallHeight - GRID_VERTICAL_SPACING) / GRID_VERTICAL_SPACING);
-    for (let i = 1; i <= verticalCount; i++) {
-      const y = i * GRID_VERTICAL_SPACING;
-      verticalPositions.push(Number(y.toFixed(2)));
-    }
-
+    // Convert wall dimensions to inches
+    const wallWidthInches = wallWidth * 12;
+    const wallHeightInches = wallHeight * 12;
+    
+    // Convert furniture dimensions to Three.js units for positioning
+    const furnitureDimensions = convertDimensionsToUnits(item.dimensions);
+    
+    // Generate peg hole grid using the new utilities
+    const { horizontalPositions, verticalPositions } = calculatePegHoleGrid(wallWidthInches, wallHeightInches);
+    
+    // Convert peg hole positions to Three.js units
+    const horizontalPositionsUnits = horizontalPositions.map(inchesToUnits);
+    const verticalPositionsUnits = verticalPositions.map(inchesToUnits);
+    
     // Search through all valid peg hole positions
-    for (const y of verticalPositions) {
-      for (const x of horizontalPositions) {
-        // Position furniture so its back wall is at the wall position
-        const position: [number, number, number] = [x, y, WALL_POSITION + item.dimensions.depth / 2];
+    for (const y of verticalPositionsUnits) {
+      for (const x of horizontalPositionsUnits) {
+        // Position furniture so its back face touches the wall
+        const position: [number, number, number] = [x, y, WALL_POSITION];
         
         // Check if position is within wall boundaries (top-left corner positioning)
         if (
-          position[0] >= -wallWidth / 2 + GRID_HORIZONTAL_SPACING &&
-          position[0] + item.dimensions.width <= wallWidth / 2 - GRID_HORIZONTAL_SPACING &&
-          position[1] >= GRID_VERTICAL_SPACING &&
-          position[1] + item.dimensions.height <= wallHeight - GRID_VERTICAL_SPACING
+          position[0] >= -wallWidth / 2 + 0.5 && // 6 inches margin
+          position[0] + furnitureDimensions.width <= wallWidth / 2 - 0.5 &&
+          position[1] >= 0.5 && // 6 inches margin
+          position[1] + furnitureDimensions.height <= wallHeight - 0.5
         ) {
-          // Check for collisions
-          if (!hasCollision(item, position)) {
+          // Check for collisions using converted dimensions
+          if (!hasCollision({ ...item, dimensions: furnitureDimensions }, position)) {
             return position;
           }
         }
@@ -132,7 +135,11 @@ const FurnitureVisualizer: React.FC = () => {
     }
 
     // If no position found, return a fallback position (top-right corner)
-    const fallbackPosition: [number, number, number] = [wallWidth / 2 - item.dimensions.width - GRID_HORIZONTAL_SPACING, wallHeight - item.dimensions.height - GRID_VERTICAL_SPACING, WALL_POSITION + item.dimensions.depth / 2];
+    const fallbackPosition: [number, number, number] = [
+      wallWidth / 2 - furnitureDimensions.width - 0.5, 
+      wallHeight - furnitureDimensions.height - 0.5, 
+      WALL_POSITION
+    ];
     return fallbackPosition;
   };
 
@@ -242,12 +249,12 @@ const FurnitureVisualizer: React.FC = () => {
             id: `Cubby-10x10-${Date.now()}`,
             name: 'Cubby - 10x10',
             type: 'storage',
-            dimensions: { width: 0.83, height: 0.83, depth: 0.83 },
+            dimensions: { width: 10, height: 10, depth: 10 }, // in inches
             color: recommendation.color || '#F5F5DC',
             material: 'plywood',
             price: 210,
             position: [0, 0, 0],
-            pegHolesToSpan: 2,
+            pegHolesToSpan: { horizontal: 2, vertical: 2 },
           };
           break;
           
@@ -256,12 +263,12 @@ const FurnitureVisualizer: React.FC = () => {
             id: `Hook-standard-${Date.now()}`,
             name: 'Hook - Standard',
             type: 'hook',
-            dimensions: { width: 0.083, height: 0.67, depth: 0.42 },
+            dimensions: { width: 1, height: 8, depth: 5 }, // in inches
             color: recommendation.color || '#F5F5DC',
             material: 'plywood',
             price: 25,
             position: [0, 0, 0],
-            pegHolesToSpan: 1,
+            pegHolesToSpan: { horizontal: 1, vertical: 1 },
           };
           break;
           
@@ -270,12 +277,12 @@ const FurnitureVisualizer: React.FC = () => {
             id: `Table-standard-${Date.now()}`,
             name: 'Table - Standard',
             type: 'table',
-            dimensions: { width: 3.17, height: 2.42, depth: 5.0 },
+            dimensions: { width: 38, height: 29, depth: 60 }, // in inches
             color: recommendation.color || '#F5F5DC',
             material: 'plywood',
             price: 1535,
             position: [0, 0, 0],
-            pegHolesToSpan: 4,
+            pegHolesToSpan: { horizontal: 5, vertical: 4 },
           };
           break;
           
@@ -284,12 +291,12 @@ const FurnitureVisualizer: React.FC = () => {
             id: `Magazine Rack-2-slot-${Date.now()}`,
             name: 'Magazine Rack - 2-slot',
             type: 'storage',
-            dimensions: { width: 0.67, height: 0.67, depth: 0.5 },
+            dimensions: { width: 8, height: 8, depth: 6 }, // in inches
             color: recommendation.color || '#F5F5DC',
             material: 'plywood',
             price: 95,
             position: [0, 0, 0],
-            pegHolesToSpan: 2,
+            pegHolesToSpan: { horizontal: 2, vertical: 2 },
           };
           break;
           
@@ -298,12 +305,12 @@ const FurnitureVisualizer: React.FC = () => {
             id: `Bookshelf-2-slot-${Date.now()}`,
             name: 'Bookshelf - 2-slot',
             type: 'storage',
-            dimensions: { width: 0.67, height: 0.83, depth: 0.83 },
+            dimensions: { width: 8, height: 10, depth: 10 }, // in inches
             color: recommendation.color || '#F5F5DC',
             material: 'plywood',
             price: 155,
             position: [0, 0, 0],
-            pegHolesToSpan: 2,
+            pegHolesToSpan: { horizontal: 2, vertical: 2 },
           };
           break;
           
@@ -312,12 +319,12 @@ const FurnitureVisualizer: React.FC = () => {
             id: `Easel-standard-${Date.now()}`,
             name: 'Easel - Standard',
             type: 'table',
-            dimensions: { width: 2.5, height: 2.17, depth: 0.42 },
+            dimensions: { width: 30, height: 26, depth: 5 }, // in inches
             color: recommendation.color || '#F5F5DC',
             material: 'plywood',
             price: 565,
             position: [0, 0, 0],
-            pegHolesToSpan: 3,
+            pegHolesToSpan: { horizontal: 4, vertical: 3 },
           };
           break;
           
@@ -377,7 +384,12 @@ const FurnitureVisualizer: React.FC = () => {
       return colorMap[hexCode] || 'Unknown Color';
     };
 
-    const totalPrice = placedItems.reduce((sum, item) => sum + item.price, 0);
+    // Calculate wall price based on current dimensions
+    const wallHorizontalHoles = Math.round((wallDimensions.width * 12 - 16) / 8);
+    const wallVerticalHoles = Math.round((wallDimensions.height * 12 - 12) / 6);
+    const wallPrice = calculateWallPrice(wallHorizontalHoles, wallVerticalHoles);
+    
+    const totalPrice = placedItems.reduce((sum, item) => sum + item.price, 0) + wallPrice;
 
     // Generate peg holes HTML
     const generatePegHoles = () => {
@@ -438,7 +450,7 @@ const FurnitureVisualizer: React.FC = () => {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>PegWall Design - ${new Date().toLocaleDateString()}</title>
+        <title>KerfWall Design - ${new Date().toLocaleDateString()}</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 20px; }
           .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
@@ -465,7 +477,7 @@ const FurnitureVisualizer: React.FC = () => {
       </head>
       <body>
         <div class="header">
-          <h1>PegWall Design</h1>
+          <h1>KerfWall Design</h1>
           <p>Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
         </div>
 
@@ -478,7 +490,7 @@ const FurnitureVisualizer: React.FC = () => {
             ${generatePegHoles()}
             ${generateFurnitureItems()}
           </div>
-          <p><small>Front view showing actual furniture placement on the peg wall. Dark rectangles are peg holes.</small></p>
+          <p><small>Front view showing actual furniture placement on the Kerf wall. Dark rectangles are slots.</small></p>
         </div>
 
         <div class="layout-section">
@@ -488,6 +500,13 @@ const FurnitureVisualizer: React.FC = () => {
           </div>
         </div>
 
+        <div class="furniture-item">
+          <div class="item-details">
+            <strong>Kerf Wall</strong><br>
+            <small>${wallHorizontalHoles} × ${wallVerticalHoles} holes</small>
+          </div>
+          <div class="item-price">${formatCurrency(wallPrice)}</div>
+        </div>
         <div class="total-section">
           <div class="furniture-item">
             <div class="item-details">Total Cost</div>
@@ -778,6 +797,7 @@ const FurnitureVisualizer: React.FC = () => {
         }}
         onSelectItem={(item) => setSelectedItemId(item?.id || null)}
         onClearWall={handleClearWall}
+        wallDimensions={wallDimensions}
       />
     </div>
   );

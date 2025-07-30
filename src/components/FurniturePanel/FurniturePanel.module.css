@@ -216,6 +216,31 @@
   background: #cc0000;
 }
 
+.wallPrice {
+  margin: 15px 0;
+  padding: 12px;
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  border-radius: 6px;
+}
+
+.wallPriceInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.wallPriceInfo strong {
+  color: #333;
+}
+
+.wallPriceInfo span {
+  font-weight: 700;
+  color: #28a745;
+  font-size: 16px;
+}
+
 .totalPrice {
   border-radius: 6px;
   text-align: center;

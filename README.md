@@ -1,12 +1,12 @@
-# PegWall - Interactive Furniture Designer
+# KerfWall - Interactive Furniture Designer
 
-A modern web application for designing and visualizing custom plywood furniture on peg hole walls. Built with React, TypeScript, and Three.js.
+A modern web application for designing and visualizing custom plywood furniture on Kerf walls. Built with React, TypeScript, and Three.js.
 
 ## Features
 
 ### 🎨 **Interactive 3D Design**
 - **Real-time 3D Visualization**: Interactive scene with realistic furniture rendering
-- **Drag & Drop Placement**: Place furniture items on peg hole walls with grid snapping
+- **Drag & Drop Placement**: Place furniture items on Kerf walls with grid snapping
 - **Camera Controls**: Multiple preset views (Front, Top, 45°, Side) plus zoom controls
 - **Collision Detection**: Prevents furniture overlap and ensures proper placement
 
@@ -140,7 +140,7 @@ src/
 ### **3D Scene Features**
 
 - **Grid System**: 8" horizontal × 6" vertical peg hole spacing
-- **Wall Positioning**: Furniture back walls flush against peg wall
+- **Wall Positioning**: Furniture back walls flush against Kerf wall
 - **Collision Detection**: Prevents overlapping placement
 - **Boundary Constraints**: Keeps furniture within wall dimensions
 

@@ -3,6 +3,7 @@ import { Box } from '@react-three/drei';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import BaseFurnitureItem from './BaseFurnitureItem';
 import { getWoodenTexture } from '../../utils/textureLoader';
+import { convertDimensionsToUnits } from '../../utils/pegHoleUtils';
 
 interface TableProps {
   item: FurnitureItemType;
@@ -21,7 +22,7 @@ interface TableProps {
 
 const Table: React.FC<TableProps> = (props) => {
   const { item, showLabel = true } = props;
-  const { width, height, depth } = item.dimensions;
+  const { width, height, depth } = convertDimensionsToUnits(item.dimensions);
 
   // Get preloaded wooden texture
   const woodenTexture = getWoodenTexture();
@@ -32,7 +33,7 @@ const Table: React.FC<TableProps> = (props) => {
       {/* Plywood base */}
       <Box
         args={[width, 0.5, depth]}
-        position={[width / 2, height - 0.25, 0]}
+        position={[width / 2, height - 0.25, depth / 2]}
       >
         <meshStandardMaterial
           map={woodenTexture}
@@ -44,7 +45,7 @@ const Table: React.FC<TableProps> = (props) => {
       {/* Colored top layer - made thicker to prevent see-through */}
       <Box
         args={[width, 0.1, depth]}
-        position={[width / 2, height - 0.05, 0]}
+        position={[width / 2, height - 0.05, depth / 2]}
       >
         <meshStandardMaterial
           color={item.color}
@@ -53,10 +54,10 @@ const Table: React.FC<TableProps> = (props) => {
         />
       </Box>
 
-      {/* Front table legs - one on each corner */}
+      {/* Back table legs - anchored to the wall */}
       <Box
         args={[0.25, height - 0.5, 0.25]}
-        position={[0.125, (height - 0.5) / 2, depth / 2 - 0.125]}
+        position={[0.125, (height - 0.5) / 2, 0.125]}
       >
         <meshStandardMaterial
           map={woodenTexture}
@@ -67,7 +68,30 @@ const Table: React.FC<TableProps> = (props) => {
 
       <Box
         args={[0.25, height - 0.5, 0.25]}
-        position={[width - 0.125, (height - 0.5) / 2, depth / 2 - 0.125]}
+        position={[width - 0.125, (height - 0.5) / 2, 0.125]}
+      >
+        <meshStandardMaterial
+          map={woodenTexture}
+          roughness={0.7}
+          metalness={0.1}
+        />
+      </Box>
+
+      {/* Front table legs - extending from the wall */}
+      <Box
+        args={[0.25, height - 0.5, 0.25]}
+        position={[0.125, (height - 0.5) / 2, depth - 0.125]}
+      >
+        <meshStandardMaterial
+          map={woodenTexture}
+          roughness={0.7}
+          metalness={0.1}
+        />
+      </Box>
+
+      <Box
+        args={[0.25, height - 0.5, 0.25]}
+        position={[width - 0.125, (height - 0.5) / 2, depth - 0.125]}
       >
         <meshStandardMaterial
           map={woodenTexture}
