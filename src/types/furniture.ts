@@ -60,9 +60,9 @@ export interface WallDimensions {
 
 // Shared color configuration
 export const SHARED_COLORS: FurnitureColor[] = [
+  { id: 'poppy', name: 'Poppy', hexCode: '#FA623B', price: 0 },
   { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
   { id: 'white', name: 'White', hexCode: '#FFFFFF', price: 0 },
-  { id: 'poppy', name: 'Poppy', hexCode: '#FA623B', price: 0 },
   { id: 'sky', name: 'Sky', hexCode: '#74B9FF', price: 0 },
   { id: 'space', name: 'Space', hexCode: '#2D3436', price: 0 },
   { id: 'ochre', name: 'Ochre', hexCode: '#FDCB6E', price: 0 },

@@ -10,14 +10,17 @@ import Bookshelf from '../products/Bookshelf';
 import Easel from '../products/Easel';
 import FurniturePanel from '../FurniturePanel/FurniturePanel';
 import WallDimensionsForm from '../WallDimensionsForm/WallDimensionsForm';
+import Recommendations from '../Recommendations/Recommendations';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import { useTextureLoader } from '../../hooks/useTextureLoader';
+import { generateRecommendations, trackUserAction } from '../../utils/recommendationEngine';
 import styles from './FurnitureVisualizer.module.css';
 
 const FurnitureVisualizer: React.FC = () => {
   const [placedItems, setPlacedItems] = useState<FurnitureItemType[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [showRecommendations, setShowRecommendations] = useState(true);
   const [wallDimensions, setWallDimensions] = useState({
     width: 8, // 8 feet
     height: 8, // 8 feet
@@ -25,9 +28,22 @@ const FurnitureVisualizer: React.FC = () => {
   const cameraRef = useRef<any>(null);
   const controlsRef = useRef<any>(null);
   
-  // Load textures
+    // Load textures
   const { texturesLoaded, loadingError } = useTextureLoader();
-
+  
+  // Available colors for recommendations
+  const availableColors = [
+    '#F5F5DC', '#FFFFFF', '#FA623B', '#74B9FF', '#2D3436', '#FDCB6E', 
+    '#636E72', '#B2BEC3', '#DFE6E9', '#FF8A65', '#D63031', '#E17055', 
+    '#00B894', '#A29BFE', '#6C5CE7', '#00CEA9', '#55A3FF'
+  ];
+  
+  // Get the currently selected color from FurniturePanel (default to first color)
+  const currentSelectedColor = '#FA623B'; // Default to Poppy, but this should come from FurniturePanel
+  
+  // Generate recommendations
+  const recommendations = generateRecommendations(placedItems, wallDimensions, availableColors, currentSelectedColor);
+  
   // Grid constants for positioning
   const GRID_HORIZONTAL_SPACING = 0.67; // 8 inches = 0.67 feet
   const GRID_VERTICAL_SPACING = 0.5;   // 6 inches = 0.5 feet
@@ -130,6 +146,14 @@ const FurnitureVisualizer: React.FC = () => {
     };
     setPlacedItems(prev => [...prev, newItem]);
     setSelectedItemId(newItem.id);
+    
+    // Track user action for ML
+    trackUserAction({
+      type: 'place_item',
+      itemType: item.name.split(' - ')[0],
+      color: item.color,
+      wallDimensions: wallDimensions,
+    });
   };
 
   const handleMoveItem = (id: string, newPosition: [number, number, number]) => {
@@ -198,6 +222,121 @@ const FurnitureVisualizer: React.FC = () => {
   const handleClearWall = () => {
     setPlacedItems([]);
     setSelectedItemId(null);
+    
+    // Track user action for ML
+    trackUserAction({
+      type: 'view_layout',
+      wallDimensions: wallDimensions,
+    });
+  };
+
+  const handleApplyRecommendation = (recommendation: any) => {
+    // Handle applying recommendations
+    if (recommendation.furnitureType) {
+      // Create proper furniture items based on the actual furniture definitions
+      let defaultItem: FurnitureItemType;
+      
+      switch (recommendation.furnitureType) {
+        case 'cubby':
+          defaultItem = {
+            id: `Cubby-10x10-${Date.now()}`,
+            name: 'Cubby - 10x10',
+            type: 'storage',
+            dimensions: { width: 0.83, height: 0.83, depth: 0.83 },
+            color: recommendation.color || '#F5F5DC',
+            material: 'plywood',
+            price: 210,
+            position: [0, 0, 0],
+            pegHolesToSpan: 2,
+          };
+          break;
+          
+        case 'hook':
+          defaultItem = {
+            id: `Hook-standard-${Date.now()}`,
+            name: 'Hook - Standard',
+            type: 'hook',
+            dimensions: { width: 0.083, height: 0.67, depth: 0.42 },
+            color: recommendation.color || '#F5F5DC',
+            material: 'plywood',
+            price: 25,
+            position: [0, 0, 0],
+            pegHolesToSpan: 1,
+          };
+          break;
+          
+        case 'table':
+          defaultItem = {
+            id: `Table-standard-${Date.now()}`,
+            name: 'Table - Standard',
+            type: 'table',
+            dimensions: { width: 3.17, height: 2.42, depth: 5.0 },
+            color: recommendation.color || '#F5F5DC',
+            material: 'plywood',
+            price: 1535,
+            position: [0, 0, 0],
+            pegHolesToSpan: 4,
+          };
+          break;
+          
+        case 'magazine-rack':
+          defaultItem = {
+            id: `Magazine Rack-2-slot-${Date.now()}`,
+            name: 'Magazine Rack - 2-slot',
+            type: 'storage',
+            dimensions: { width: 0.67, height: 0.67, depth: 0.5 },
+            color: recommendation.color || '#F5F5DC',
+            material: 'plywood',
+            price: 95,
+            position: [0, 0, 0],
+            pegHolesToSpan: 2,
+          };
+          break;
+          
+        case 'bookshelf':
+          defaultItem = {
+            id: `Bookshelf-2-slot-${Date.now()}`,
+            name: 'Bookshelf - 2-slot',
+            type: 'storage',
+            dimensions: { width: 0.67, height: 0.83, depth: 0.83 },
+            color: recommendation.color || '#F5F5DC',
+            material: 'plywood',
+            price: 155,
+            position: [0, 0, 0],
+            pegHolesToSpan: 2,
+          };
+          break;
+          
+        case 'easel':
+          defaultItem = {
+            id: `Easel-standard-${Date.now()}`,
+            name: 'Easel - Standard',
+            type: 'table',
+            dimensions: { width: 2.5, height: 2.17, depth: 0.42 },
+            color: recommendation.color || '#F5F5DC',
+            material: 'plywood',
+            price: 565,
+            position: [0, 0, 0],
+            pegHolesToSpan: 3,
+          };
+          break;
+          
+        default:
+          return; // Unknown furniture type
+      }
+      
+      handleAddItem(defaultItem);
+    }
+  };
+
+  const handleDismissRecommendation = (recommendationId: string) => {
+    // Store dismissed recommendations to avoid showing them again
+    const dismissed = JSON.parse(localStorage.getItem('dismissed_recommendations') || '[]');
+    dismissed.push(recommendationId);
+    localStorage.setItem('dismissed_recommendations', JSON.stringify(dismissed));
+    
+    // Force re-render to hide dismissed recommendations
+    setPlacedItems(prev => [...prev]);
   };
 
   const handlePrint = () => {
@@ -215,9 +354,9 @@ const FurnitureVisualizer: React.FC = () => {
 
     const getColorName = (hexCode: string): string => {
       const colorMap: { [key: string]: string } = {
+          '#FA623B': 'Poppy',
         '#F5F5DC': 'Natural',
         '#FFFFFF': 'White',
-        '#FA623B': 'Poppy',
         '#74B9FF': 'Sky',
         '#2D3436': 'Space',
         '#FDCB6E': 'Ochre',
@@ -596,6 +735,27 @@ const FurnitureVisualizer: React.FC = () => {
           />
         </div>
       </div>
+
+              {/* Recommendations */}
+        {showRecommendations && (
+          <Recommendations
+            recommendations={recommendations}
+            onApplyRecommendation={handleApplyRecommendation}
+            onDismiss={handleDismissRecommendation}
+            onClose={() => setShowRecommendations(false)}
+          />
+        )}
+
+        {/* Reopen Recommendations Button */}
+        {!showRecommendations && recommendations.length > 0 && (
+          <button
+            className={styles.reopenButton}
+            onClick={() => setShowRecommendations(true)}
+            title="Show Smart Suggestions"
+          >
+            🧠
+          </button>
+        )}
 
       {/* Furniture Panel */}
       <FurniturePanel
