@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plane } from '@react-three/drei';
+import { Plane, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 import HardwoodFloor from './HardwoodFloor';
 import styles from './Wall.module.css';
@@ -57,18 +57,18 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
       <group>
         {horizontalPositionsUnits.map((x) =>
           verticalPositionsUnits.map((y) => (
-            <Plane
+            <RoundedBox
               key={`hole-${x}-${y}`}
-              args={[inchesToUnits(PEG_HOLE_SIZE.width), inchesToUnits(PEG_HOLE_SIZE.height)]} // 1" wide x 3" tall
+              args={[inchesToUnits(PEG_HOLE_SIZE.width), inchesToUnits(PEG_HOLE_SIZE.height), 0.02]} // 1" wide x 3" tall x 0.02" deep
               position={[x, y, WALL_POSITION + 0.01]}
-              rotation={[0, 0, 0]}
+              radius={0.02} // Small border radius for rounded corners
             >
               <meshStandardMaterial
                 color="#000000"
                 roughness={1.0}
                 metalness={0.0}
               />
-            </Plane>
+            </RoundedBox>
           ))
         )}
       </group>
