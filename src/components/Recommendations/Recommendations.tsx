@@ -1,6 +1,7 @@
 import React from 'react';
 import { Recommendation } from '../../utils/recommendationEngine';
 import styles from './Recommendations.module.css';
+import { Button } from '../shared';
 
 interface RecommendationsProps {
   recommendations: Recommendation[];
@@ -51,9 +52,9 @@ const Recommendations: React.FC<RecommendationsProps> = ({
             Based on your layout and preferences
           </p>
         </div>
-        <button className={styles.closeButton} onClick={onClose}>
+        <Button variant="ghost" size="small" onClick={onClose} className={styles.closeButton}>
           ×
-        </button>
+        </Button>
       </div>
       
       <div className={styles.recommendationsList}>
@@ -83,18 +84,20 @@ const Recommendations: React.FC<RecommendationsProps> = ({
             </p>
             
             <div className={styles.recommendationActions}>
-              <button
-                className={styles.applyButton}
+              <Button
+                variant="primary"
                 onClick={() => onApplyRecommendation(recommendation)}
+                className={styles.applyButton}
               >
                 Try This
-              </button>
-              <button
-                className={styles.dismissButton}
+              </Button>
+              <Button
+                variant="ghost"
                 onClick={() => onDismiss(recommendation.id)}
+                className={styles.dismissButton}
               >
                 Dismiss
-              </button>
+              </Button>
             </div>
           </div>
         ))}

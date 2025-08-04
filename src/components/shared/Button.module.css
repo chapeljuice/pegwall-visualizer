@@ -1,0 +1,117 @@
+/* Base button styles */
+.button {
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  outline: none;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button:focus {
+  outline: 2px solid rgba(85, 95, 18, 0.5);
+  outline-offset: 2px;
+}
+
+/* Size variants */
+.small {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.medium {
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+.large {
+  padding: 12px 20px;
+  font-size: 16px;
+}
+
+/* Color variants */
+.primary {
+  background: #555f12;
+  color: white;
+  box-shadow: 0 2px 8px rgba(85, 95, 18, 0.3);
+}
+
+.primary:hover:not(:disabled) {
+  background: #4a5210;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(85, 95, 18, 0.4);
+}
+
+.primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.secondary {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.secondary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.danger {
+  background: #dc3545;
+  color: white;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.danger:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+.danger:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.ghost {
+  background: rgba(255, 255, 255, 0.8);
+  color: #636E72;
+  border: 1px solid rgba(99, 110, 114, 0.3);
+}
+
+.ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(99, 110, 114, 0.5);
+  color: #2D3436;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .medium {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .large {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+} 

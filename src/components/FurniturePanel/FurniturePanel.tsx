@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FurnitureItem as FurnitureItemType, FurnitureGroup, SHARED_COLORS } from '../../types/furniture';
 import FurnitureGroupCard from './FurnitureGroupCard';
 import { calculateWallPrice } from '../../utils/pegHoleUtils';
+import { Button } from '../shared';
 import styles from './FurniturePanel.module.css';
 
 interface FurniturePanelProps {
@@ -23,7 +24,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
   onClearWall,
   wallDimensions,
 }) => {
-  const [activeTab, setActiveTab] = useState<'available' | 'placed'>('available');
+  const [activeAccordion, setActiveAccordion] = useState<'available' | 'placed'>('available');
   const [sharedSelectedColor, setSharedSelectedColor] = useState(SHARED_COLORS[0]); // Default to first color
 
   // Sample furniture groups - you can expand this with your 6 cubby sizes and 18 colors
@@ -255,102 +256,116 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
           <p>Click a product group to see customization options. Drag placed items to move them around!</p>
           <p>Furniture snaps to a 16" × 8" slot grid.</p>
         </div>
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tab} ${activeTab === 'available' ? styles.active : ''}`}
-            onClick={() => setActiveTab('available')}
-          >
-            Available Products
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'placed' ? styles.active : ''}`}
-            onClick={() => setActiveTab('placed')}
-          >
-            View Cart ({placedItems.length})
-          </button>
-        </div>
       </div>
-
-      <div className={styles.content}>
-        {activeTab === 'available' ? (
-          <div className={styles.itemsGrid}>
-            {furnitureGroups.map((group) => (
-              <FurnitureGroupCard
-                key={group.id}
-                group={group}
-                onPlaceItem={onPlaceItem}
-                sharedSelectedColor={sharedSelectedColor}
-                onSharedColorChange={setSharedSelectedColor}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className={styles.placedItems}>
-            {placedItems.length === 0 ? (
-              <p className={styles.emptyState}>
-                No products added yet.<br /><br />Select products from the "Available Products" tab to start designing your space.
-              </p>
-            ) : (
-              <>
-                {placedItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className={`${styles.placedItem} ${
-                      selectedItem?.id === item.id ? styles.selected : ''
-                    }`}
-                    onClick={() => onSelectItem(item)}
-                  >
-                    <div
-                      className={styles.itemPreview}
-                      style={{ 
-                        backgroundImage: `url(${getItemImage(item.name)})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundColor: item.color // Fallback color if image fails to load
-                      }}
-                    />
-                    <div className={styles.itemInfo}>
-                      <h4>{item.name}</h4>
-                      <div className={styles.itemColor}>
-                        <span 
-                          className={styles.colorSwatch}
-                          style={{ backgroundColor: item.color }}
-                        />
-                        <span>{getColorName(item.color)}</span>
-                      </div>
-                      <p>{formatCurrency(item.price)}</p>
-                    </div>
-                    <button
-                      className={styles.removeButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRemoveItem(item.id);
-                      }}
-                    >
-                      ×
-                    </button>
-                  </div>
+      <div className={styles.accordion}>
+        <div className={styles.accordionItem}>
+          <button
+            className={`${styles.accordionHeader} ${activeAccordion === 'available' ? styles.active : ''}`}
+            onClick={() => setActiveAccordion(activeAccordion === 'available' ? 'placed' : 'available')}
+          >
+            <span>Available Products</span>
+            <span className={styles.accordionIcon}>
+              {activeAccordion === 'available' ? '−' : '+'}
+            </span>
+          </button>
+          {activeAccordion === 'available' && (
+            <div className={styles.accordionContent}>
+              <div className={styles.itemsGrid}>
+                {furnitureGroups.map((group) => (
+                  <FurnitureGroupCard
+                    key={group.id}
+                    group={group}
+                    onPlaceItem={onPlaceItem}
+                    sharedSelectedColor={sharedSelectedColor}
+                    onSharedColorChange={setSharedSelectedColor}
+                  />
                 ))}
-                <div className={styles.wallPrice}>
-                  <div className={styles.wallPriceInfo}>
-                    <strong>Kerf Wall ({wallHorizontalHoles} × {wallVerticalHoles} holes)</strong>
-                    <span>{formatCurrency(wallPrice)}</span>
-                  </div>
-                </div>
-                <div className={styles.totalPrice}>
-                  <strong>Total: {formatCurrency(totalPrice)}</strong>
-                </div>
-                <button
-                  className={styles.clearWallButton}
-                  onClick={onClearWall}
-                >
-                  Clear Wall
-                </button>
-              </>
-            )}
-          </div>
-        )}
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <div className={styles.accordionItem}>
+          <button
+            className={`${styles.accordionHeader} ${activeAccordion === 'placed' ? styles.active : ''}`}
+            onClick={() => setActiveAccordion(activeAccordion === 'placed' ? 'available' : 'placed')}
+          >
+            <span>Your Cart ({placedItems.length})</span>
+            <span className={styles.accordionIcon}>
+              {activeAccordion === 'placed' ? '−' : '+'}
+            </span>
+          </button>
+          {activeAccordion === 'placed' && (
+            <div className={styles.accordionContent}>
+              <div className={styles.placedItems}>
+                {placedItems.length === 0 ? (
+                  <p className={styles.emptyState}>
+                    No products added yet.<br /><br />Select products from the "Available Products" section to start designing your space.
+                  </p>
+                ) : (
+                  <>
+                    {placedItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className={`${styles.placedItem} ${
+                          selectedItem?.id === item.id ? styles.selected : ''
+                        }`}
+                        onClick={() => onSelectItem(item)}
+                      >
+                        <div
+                          className={styles.itemPreview}
+                          style={{ 
+                            backgroundImage: `url(${getItemImage(item.name)})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundColor: item.color // Fallback color if image fails to load
+                          }}
+                        />
+                        <div className={styles.itemInfo}>
+                          <h4>{item.name}</h4>
+                          <div className={styles.itemColor}>
+                            <span 
+                              className={styles.colorSwatch}
+                              style={{ backgroundColor: item.color }}
+                            />
+                            <span>{getColorName(item.color)}</span>
+                          </div>
+                          <p>{formatCurrency(item.price)}</p>
+                        </div>
+                        <button
+                          className={styles.removeButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRemoveItem(item.id);
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    <div className={styles.wallPrice}>
+                      <div className={styles.wallPriceInfo}>
+                        <strong>Kerf Wall ({wallHorizontalHoles} × {wallVerticalHoles} holes)</strong>
+                        <span>{formatCurrency(wallPrice)}</span>
+                      </div>
+                    </div>
+                    <div className={styles.totalPrice}>
+                      <strong>Total: {formatCurrency(totalPrice)}</strong>
+                    </div>
+                    <Button
+                      variant="danger"
+                      onClick={onClearWall}
+                      className={styles.clearWallButton}
+                    >
+                      Clear Wall
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

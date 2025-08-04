@@ -1,29 +1,34 @@
 .panel {
-  width: 350px;
-  background: white;
-  border-left: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  height: 100vh;
+  background: #FA623B;
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  width: 400px;
+  overflow: hidden;
 }
 
 .header {
-  padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
-  background: #FA623B;
+  padding: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   color: white;
+  flex-shrink: 0;
+  margin-bottom: 15px;
 }
 
 .header h2 {
   margin: 0 0 10px 0;
   font-size: 24px;
   font-weight: 600;
+  color: white;
 }
 
 .instructions {
-  margin-bottom: 15px;
   font-size: 12px;
   opacity: 0.9;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .instructions p {
@@ -31,30 +36,70 @@
   line-height: 1.4;
 }
 
-.tabs {
+.accordion {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  padding: 0 15px 15px 15px;
+  overflow: hidden;
 }
 
-.tab {
-  flex: 1;
-  padding: 8px 12px;
+.accordionItem {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.accordionItem:last-child {
+  /* Removed margin-top */
+}
+
+.accordionHeader {
+  width: 100%;
+  padding: 16px 15px;
   border: none;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.accordionHeader:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.accordionHeader.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.accordionIcon {
+  font-size: 20px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.8);
   transition: all 0.2s ease;
 }
 
-.tab:hover {
-  background: rgba(255, 255, 255, 0.3);
+.accordionHeader.active .accordionIcon {
+  color: white;
 }
 
-.tab.active {
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
+.accordionContent {
+  background: rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  max-height: 75vh;
+  overflow-y: auto;
+  padding: 15px;
 }
 
 .content {
@@ -66,7 +111,7 @@
 .itemsGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 15px;
+  gap: 0;
 }
 
 .itemCard {
@@ -217,10 +262,9 @@
 }
 
 .wallPrice {
-  margin: 15px 0;
   padding: 12px;
-  background: rgba(40, 167, 69, 0.1);
-  border: 1px solid rgba(40, 167, 69, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;
 }
 
@@ -229,15 +273,20 @@
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
+  color: white;
 }
 
 .wallPriceInfo strong {
-  color: #333;
+  color: white;
+  font-weight: 600;
 }
 
 .wallPriceInfo span {
   font-weight: 700;
-  color: #28a745;
+  color: #2d5a2d;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 16px;
 }
 
@@ -246,13 +295,16 @@
   text-align: center;
   font-size: 28px;
   font-weight: 600;
-  color: #4CAF50;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   line-height: 1.2;
 }
 
 .emptyState {
   text-align: center;
-  color: #666;
+  color: #fff;
   font-style: italic;
   padding: 40px 20px;
 }
@@ -260,7 +312,6 @@
 .clearWallButton {
   width: 100%;
   padding: 12px;
-  margin-top: 15px;
   background: #ff4444;
   color: white;
   border: none;

@@ -144,43 +144,10 @@
 
 .applyButton {
   flex: 1;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-}
-
-.applyButton:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.applyButton:active {
-  transform: translateY(0);
 }
 
 .dismissButton {
-  background: rgba(255, 255, 255, 0.8);
-  color: #636E72;
-  border: 1px solid rgba(99, 110, 114, 0.3);
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.dismissButton:hover {
-  background: rgba(255, 255, 255, 1);
-  border-color: rgba(99, 110, 114, 0.5);
-  color: #2D3436;
+  flex: 1;
 }
 
 /* Responsive design */

@@ -15,6 +15,7 @@ import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import { convertDimensionsToUnits, calculatePegHoleGrid, inchesToUnits, calculateWallPrice } from '../../utils/pegHoleUtils';
 import { useTextureLoader } from '../../hooks/useTextureLoader';
 import { generateRecommendations, trackUserAction } from '../../utils/recommendationEngine';
+import { Button } from '../shared';
 import styles from './FurnitureVisualizer.module.css';
 
 const FurnitureVisualizer: React.FC = () => {
@@ -560,7 +561,10 @@ const FurnitureVisualizer: React.FC = () => {
             // Set the default camera to look at the same position as front view
             camera.lookAt(0, 4, -2);
           }}
+          gl={{ alpha: false }}
         >
+          {/* Background */}
+          <color attach="background" args={['#F3F2ED']} />
           {/* Lighting */}
           <ambientLight intensity={0.4} />
           <directionalLight
@@ -705,53 +709,61 @@ const FurnitureVisualizer: React.FC = () => {
 
         {/* Zoom Buttons */}
         <div className={styles.zoomControls}>
-          <button
-            className={styles.zoomButton}
+          <Button
+            variant="secondary"
+            size="small"
             onClick={handleZoomIn}
+            className={styles.zoomButton}
           >
             +
-          </button>
-          <button
-            className={styles.zoomButton}
+          </Button>
+          <Button
+            variant="secondary"
+            size="small"
             onClick={handleZoomOut}
+            className={styles.zoomButton}
           >
             -
-          </button>
+          </Button>
         </div>
 
         {/* Camera Preset Buttons */}
         <div className={styles.cameraPresets}>
-          <button
-            className={styles.presetButton}
+          <Button
+            variant="secondary"
             onClick={() => handleCameraPreset('front')}
+            className={styles.presetButton}
           >
             Front View
-          </button>
-          <button
-            className={styles.presetButton}
+          </Button>
+          <Button
+            variant="secondary"
             onClick={() => handleCameraPreset('top')}
+            className={styles.presetButton}
           >
             Top View
-          </button>
-          <button
-            className={styles.presetButton}
+          </Button>
+          <Button
+            variant="secondary"
             onClick={() => handleCameraPreset('perspective')}
+            className={styles.presetButton}
           >
             45° View
-          </button>
-          <button
-            className={styles.presetButton}
+          </Button>
+          <Button
+            variant="secondary"
             onClick={() => handleCameraPreset('side')}
+            className={styles.presetButton}
           >
             Side View
-          </button>
-          <button
-            className={styles.presetButton}
+          </Button>
+          <Button
+            variant="primary"
             onClick={handlePrint}
-            style={{ backgroundColor: '#4CAF50', color: 'white' }}
+            className={styles.presetButton}
           >
             Print Layout
-          </button>
+          </Button>
         </div>
 
         {/* Wall Dimensions Form */}
@@ -775,13 +787,14 @@ const FurnitureVisualizer: React.FC = () => {
 
         {/* Reopen Recommendations Button */}
         {!showRecommendations && recommendations.length > 0 && (
-          <button
-            className={styles.reopenButton}
+          <Button
+            variant="secondary"
             onClick={() => setShowRecommendations(true)}
             title="Show Smart Suggestions"
+            className={styles.reopenButton}
           >
             🧠
-          </button>
+          </Button>
         )}
 
       {/* Furniture Panel */}

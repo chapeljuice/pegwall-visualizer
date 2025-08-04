@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { calculateWallPrice } from '../../utils/pegHoleUtils';
+import { Button } from '../shared';
 import styles from './WallDimensionsForm.module.css';
 
 interface WallDimensionsFormProps {
@@ -68,12 +69,13 @@ const WallDimensionsForm: React.FC<WallDimensionsFormProps> = ({ dimensions, onC
 
   return (
     <div className={styles.container}>
-              <button
-          className={styles.toggleButton}
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          ⚙️ Kerf Wall Grid
-        </button>
+                    <Button
+        variant="secondary"
+        onClick={() => setIsOpen(!isOpen)}
+        className={styles.toggleButton}
+      >
+        ⚙️ Kerf Wall Grid
+      </Button>
       
       {isOpen && (
         <div className={styles.form}>

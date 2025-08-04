@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FurnitureGroup, FurnitureItem, FurnitureColor, SHARED_COLORS } from '../../types/furniture';
+import { Button } from '../shared';
 import styles from './FurniturePanel.module.css';
 
 interface FurnitureGroupCardProps {
@@ -152,12 +153,13 @@ const FurnitureGroupCard: React.FC<FurnitureGroupCardProps> = ({
             </div>
             <div className={styles.priceAndButton}>
               <span className={styles.totalPrice}>{formatCurrency(totalPrice)}</span>
-              <button
-                className={styles.addToWallButton}
+              <Button
+                variant="primary"
                 onClick={handlePlaceItem}
+                className={styles.addToWallButton}
               >
                 Add to Wall
-              </button>
+              </Button>
             </div>
           </div>
         </div>
