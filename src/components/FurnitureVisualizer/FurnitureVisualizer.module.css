@@ -56,6 +56,28 @@
   z-index: 1000;
 }
 
+.imageUploadContainer {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  max-width: 300px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.imageUploadContainer.minimized {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  max-width: auto;
+}
+
+
+
 .loadingContainer {
   flex: 1;
   display: flex;
@@ -143,5 +165,12 @@
     width: 40px;
     height: 40px;
     font-size: 16px;
+  }
+
+  .imageUploadContainer {
+    top: 10px;
+    left: 10px;
+    max-width: 250px;
+    padding: 10px;
   }
 } 

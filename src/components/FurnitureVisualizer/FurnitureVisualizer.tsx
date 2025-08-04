@@ -1,6 +1,7 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Plane } from '@react-three/drei';
+import * as THREE from 'three';
 import Wall from '../Wall/Wall';
 import Cubby from '../products/Cubby';
 import Hook from '../products/Hook';
@@ -15,7 +16,7 @@ import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
 import { convertDimensionsToUnits, calculatePegHoleGrid, inchesToUnits, calculateWallPrice } from '../../utils/pegHoleUtils';
 import { useTextureLoader } from '../../hooks/useTextureLoader';
 import { generateRecommendations, trackUserAction } from '../../utils/recommendationEngine';
-import { Button } from '../shared';
+import { Button, ImageUpload, BackgroundImageControls } from '../shared';
 import styles from './FurnitureVisualizer.module.css';
 
 const FurnitureVisualizer: React.FC = () => {
@@ -27,6 +28,13 @@ const FurnitureVisualizer: React.FC = () => {
     width: 3.83, // 3.83 feet (5 horizontal slots × 8" + 6" margin = 46" = 3.83')
     height: 4.33, // 4.33 feet (8 vertical slots × 6" + 4" margin = 52" = 4.33')
   });
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [backgroundTexture, setBackgroundTexture] = useState<THREE.Texture | null>(null);
+  const [backgroundPosition, setBackgroundPosition] = useState<[number, number, number]>([0, 10, -10]);
+  const [backgroundScale, setBackgroundScale] = useState<number>(1);
+  const [backgroundOpacity, setBackgroundOpacity] = useState<number>(0.8);
+  const [showBackgroundControls, setShowBackgroundControls] = useState<boolean>(false);
+  const [isUploadMinimized, setIsUploadMinimized] = useState<boolean>(false);
   const cameraRef = useRef<any>(null);
   const controlsRef = useRef<any>(null);
   
@@ -237,6 +245,53 @@ const FurnitureVisualizer: React.FC = () => {
       wallDimensions: wallDimensions,
     });
   };
+
+  const handleBackgroundImageUpload = (imageUrl: string) => {
+    console.log('Background image uploaded:', imageUrl.substring(0, 100) + '...');
+    setBackgroundImage(imageUrl);
+  };
+
+  const handleRemoveBackgroundImage = () => {
+    setBackgroundImage(null);
+    setBackgroundTexture(null);
+  };
+
+  const handleBackgroundPositionChange = (x: number, y: number, z: number) => {
+    setBackgroundPosition([x, y, z]);
+  };
+
+  const handleBackgroundScaleChange = (scale: number) => {
+    setBackgroundScale(scale);
+  };
+
+  const handleBackgroundOpacityChange = (opacity: number) => {
+    setBackgroundOpacity(opacity);
+  };
+
+  // Load background texture when image changes
+  useEffect(() => {
+    if (!backgroundImage) {
+      setBackgroundTexture(null);
+      return;
+    }
+
+    console.log('Loading background texture for Canvas');
+    const loader = new THREE.TextureLoader();
+    loader.load(
+      backgroundImage,
+      (texture) => {
+        console.log('Background texture loaded successfully for Canvas');
+        texture.wrapS = THREE.ClampToEdgeWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        setBackgroundTexture(texture);
+      },
+      undefined,
+      (error) => {
+        console.error('Failed to load background texture for Canvas:', error);
+        setBackgroundTexture(null);
+      }
+    );
+  }, [backgroundImage]);
 
   const handleApplyRecommendation = (recommendation: any) => {
     // Handle applying recommendations
@@ -565,6 +620,21 @@ const FurnitureVisualizer: React.FC = () => {
         >
           {/* Background */}
           <color attach="background" args={['#F3F2ED']} />
+          
+          {/* Background wall image (behind everything) */}
+          {backgroundImage && backgroundTexture && (
+            <Plane
+              args={[20 * backgroundScale, 20 * backgroundScale]} // Scale the plane
+              position={backgroundPosition}
+              rotation={[0, 0, 0]}
+            >
+              <meshBasicMaterial
+                map={backgroundTexture}
+                transparent
+                opacity={backgroundOpacity}
+              />
+            </Plane>
+          )}
           {/* Lighting */}
           <ambientLight intensity={0.4} />
           <directionalLight
@@ -796,6 +866,31 @@ const FurnitureVisualizer: React.FC = () => {
             🧠
           </Button>
         )}
+
+      {/* Background Image Upload */}
+      <div className={`${styles.imageUploadContainer} ${isUploadMinimized ? styles.minimized : ''}`}>
+        <ImageUpload
+          onImageUpload={handleBackgroundImageUpload}
+          currentImage={backgroundImage || undefined}
+          onRemoveImage={handleRemoveBackgroundImage}
+          showControls={showBackgroundControls}
+          onToggleControls={() => setShowBackgroundControls(!showBackgroundControls)}
+          isMinimized={isUploadMinimized}
+          onToggleMinimize={() => setIsUploadMinimized(!isUploadMinimized)}
+        />
+        
+        {backgroundImage && showBackgroundControls && (
+          <BackgroundImageControls
+            onPositionChange={handleBackgroundPositionChange}
+            onScaleChange={handleBackgroundScaleChange}
+            onOpacityChange={handleBackgroundOpacityChange}
+            position={backgroundPosition}
+            scale={backgroundScale}
+            opacity={backgroundOpacity}
+            isVisible={true}
+          />
+        )}
+      </div>
 
       {/* Furniture Panel */}
       <FurniturePanel
