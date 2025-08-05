@@ -34,7 +34,7 @@ const FurnitureVisualizer: React.FC = () => {
   const [backgroundScale, setBackgroundScale] = useState<number>(1);
   const [backgroundOpacity, setBackgroundOpacity] = useState<number>(0.6);
   const [showBackgroundControls, setShowBackgroundControls] = useState<boolean>(false);
-  const [isUploadMinimized, setIsUploadMinimized] = useState<boolean>(false);
+  const [isUploadMinimized, setIsUploadMinimized] = useState<boolean>(true);
   const cameraRef = useRef<any>(null);
   const controlsRef = useRef<any>(null);
   
