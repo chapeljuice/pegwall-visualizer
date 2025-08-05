@@ -251,7 +251,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        <h2>Kerf Wall Designer</h2>
+        <h2>KERF Wall Designer</h2>
         <div className={styles.instructions}>
           <p>Click a product group to see customization options. Drag placed items to move them around!</p>
           <p>Furniture snaps to a 16" × 8" slot grid.</p>
