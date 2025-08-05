@@ -68,13 +68,13 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
         },
         {
           id: '40x10',
-          name: '39" × 10"',
-          dimensions: { width: 39, height: 10, depth: 10 },
+          name: '40" × 10"',
+          dimensions: { width: 40, height: 10, depth: 10 },
           price: 305,
           pegHolesToSpan: { horizontal: 5, vertical: 2 },
         },
         {
-          id: '39x16',
+          id: '40x16',
           name: '40" × 16"',
           dimensions: { width: 40, height: 16, depth: 10 },
           price: 365,

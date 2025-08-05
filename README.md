@@ -12,7 +12,7 @@ A modern web application for designing and visualizing custom plywood furniture 
 - **Dynamic Wall Sizing**: Adjustable wall dimensions with automatic slot grid calculation
 
 ### 🛋️ **Comprehensive Furniture Catalog**
-- **Cubby Storage**: 6 size options (10"×10", 10"×16", 20"×10", 20"×16", 39"×10", 40"×16")
+- **Cubby Storage**: 6 size options (10"×10", 10"×16", 20"×10", 20"×16", 40"×10", 40"×16")
 - **Hook**: Simple hanging solution for coats, bags, and accessories
 - **Table**: Sturdy work surface with customizable colors
 - **Magazine Rack**: 2-slot and 3-slot options for mail and magazines
