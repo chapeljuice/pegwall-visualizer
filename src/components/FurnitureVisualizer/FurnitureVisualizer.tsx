@@ -13,7 +13,7 @@ import FurniturePanel from '../FurniturePanel/FurniturePanel';
 import WallDimensionsForm from '../WallDimensionsForm/WallDimensionsForm';
 import Recommendations from '../Recommendations/Recommendations';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
-import { convertDimensionsToUnits, calculatePegHoleGrid, inchesToUnits, calculateWallPrice } from '../../utils/pegHoleUtils';
+import { convertDimensionsToUnits, calculatePegHoleGrid, inchesToUnits, calculateWallPrice, calculateFurnitureWidth, calculateFurnitureHeight } from '../../utils/pegHoleUtils';
 import { useTextureLoader } from '../../hooks/useTextureLoader';
 import { generateRecommendations, trackUserAction } from '../../utils/recommendationEngine';
 import { Button, ImageUpload, BackgroundImageControls } from '../shared';
@@ -25,7 +25,7 @@ const FurnitureVisualizer: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [wallDimensions, setWallDimensions] = useState({
-    width: 3.83, // 3.83 feet (5 horizontal slots × 8" + 6" margin = 46" = 3.83')
+    width: 6.0, // 6.0 feet (5 horizontal slots × 8" + 16" margin = 56" = 6.0')
     height: 4.33, // 4.33 feet (8 vertical slots × 6" + 4" margin = 52" = 4.33')
   });
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
@@ -77,8 +77,16 @@ const FurnitureVisualizer: React.FC = () => {
   // Function to check if a position conflicts with existing items
   const hasCollision = (newItem: FurnitureItemType, position: [number, number, number]): boolean => {
     const [x, y] = position;
-    // Convert dimensions to Three.js units for collision detection
-    const newItemDimensions = convertDimensionsToUnits(newItem.dimensions);
+    
+    // Calculate the actual furniture dimensions based on peg hole spans
+    const furnitureWidthInches = calculateFurnitureWidth(newItem.pegHolesToSpan.horizontal);
+    const furnitureHeightInches = calculateFurnitureHeight(newItem.pegHolesToSpan.vertical, newItem.pegHolesToSpan.horizontal, newItem.dimensions.height);
+    
+    // Convert calculated dimensions to Three.js units for collision detection
+    const newItemDimensions = {
+      width: furnitureWidthInches / 12, // Convert back to feet
+      height: furnitureHeightInches / 12,
+    };
     
     // Position is now the top-left corner, so the rectangle starts at position
     const newRect = {
@@ -90,8 +98,16 @@ const FurnitureVisualizer: React.FC = () => {
 
     const collision = placedItems.some(existingItem => {
       const [ex, ey] = existingItem.position;
-      // Convert existing item dimensions to Three.js units
-      const existingItemDimensions = convertDimensionsToUnits(existingItem.dimensions);
+      
+      // Calculate the actual dimensions for existing items based on peg hole spans
+      const existingFurnitureWidthInches = calculateFurnitureWidth(existingItem.pegHolesToSpan.horizontal);
+      const existingFurnitureHeightInches = calculateFurnitureHeight(existingItem.pegHolesToSpan.vertical, existingItem.pegHolesToSpan.horizontal, existingItem.dimensions.height);
+      
+      // Convert calculated dimensions to Three.js units
+      const existingItemDimensions = {
+        width: existingFurnitureWidthInches / 12, // Convert back to feet
+        height: existingFurnitureHeightInches / 12,
+      };
       
       // Existing items also use top-left corner positioning
       const existingRect = {
@@ -116,9 +132,6 @@ const FurnitureVisualizer: React.FC = () => {
     const wallWidthInches = wallWidth * 12;
     const wallHeightInches = wallHeight * 12;
     
-    // Convert furniture dimensions to Three.js units for positioning
-    const furnitureDimensions = convertDimensionsToUnits(item.dimensions);
-    
     // Generate peg hole grid using the new utilities
     const { horizontalPositions, verticalPositions } = calculatePegHoleGrid(wallWidthInches, wallHeightInches);
     
@@ -126,20 +139,43 @@ const FurnitureVisualizer: React.FC = () => {
     const horizontalPositionsUnits = horizontalPositions.map(inchesToUnits);
     const verticalPositionsUnits = verticalPositions.map(inchesToUnits);
     
+    // Use the same boundary logic as pegHoleUtils - based on actual peg hole positions
+    const effectiveWallLeft = inchesToUnits(horizontalPositions[0] - 0.5); // 0.5 inches (half of 1" peg hole)
+    const effectiveWallRight = inchesToUnits(horizontalPositions[horizontalPositions.length - 1] + 0.5);
+    const effectiveWallBottom = inchesToUnits(verticalPositions[0] - 1.5); // 1.5 inches (half of 3" peg hole)
+    const effectiveWallTop = inchesToUnits(verticalPositions[verticalPositions.length - 1] + 1.5);
+    
+    // Calculate the actual furniture dimensions based on peg hole spans
+    const furnitureWidthInches = calculateFurnitureWidth(item.pegHolesToSpan.horizontal);
+            const furnitureHeightInches = calculateFurnitureHeight(item.pegHolesToSpan.vertical, item.pegHolesToSpan.horizontal, item.dimensions.height);
+    
     // Search through all valid peg hole positions
     for (const y of verticalPositionsUnits) {
       for (const x of horizontalPositionsUnits) {
         // Position furniture so its back face touches the wall
         const position: [number, number, number] = [x, y, WALL_POSITION];
         
-        // Check if position is within wall boundaries (top-left corner positioning)
+        // Convert position to inches for boundary checking
+        const positionXInches = position[0] * 12;
+        const positionYInches = position[1] * 12;
+        
+        // Check if position is within reasonable bounds
+        // Allow furniture to extend slightly beyond the peg hole grid for larger items
+        // But be more restrictive for very large items
+        const margin = Math.min(2.0, Math.max(0.5, (horizontalPositions[horizontalPositions.length - 1] - horizontalPositions[0] - furnitureWidthInches) / 4));
         if (
-          position[0] >= -wallWidth / 2 + 0.5 && // 6 inches margin
-          position[0] + furnitureDimensions.width <= wallWidth / 2 - 0.5 &&
-          position[1] >= 0.5 && // 6 inches margin
-          position[1] + furnitureDimensions.height <= wallHeight - 0.5
+          positionXInches >= horizontalPositions[0] - margin &&
+          positionXInches + furnitureWidthInches <= horizontalPositions[horizontalPositions.length - 1] + margin &&
+          positionYInches >= verticalPositions[0] - 2.5 &&
+          positionYInches + furnitureHeightInches <= verticalPositions[verticalPositions.length - 1] + 2.5
         ) {
-          // Check for collisions using converted dimensions
+          // Check for collisions using the calculated dimensions
+          const furnitureDimensions = {
+            width: furnitureWidthInches / 12, // Convert back to feet
+            height: furnitureHeightInches / 12,
+            depth: item.dimensions.depth
+          };
+          
           if (!hasCollision({ ...item, dimensions: furnitureDimensions }, position)) {
             return position;
           }
@@ -147,10 +183,10 @@ const FurnitureVisualizer: React.FC = () => {
       }
     }
 
-    // If no position found, return a fallback position (top-right corner)
+    // If no position found, return a fallback position using the same margin logic
     const fallbackPosition: [number, number, number] = [
-      wallWidth / 2 - furnitureDimensions.width - 0.5, 
-      wallHeight - furnitureDimensions.height - 0.5, 
+      effectiveWallRight - furnitureWidthInches / 12, // Position at right edge
+      effectiveWallTop - furnitureHeightInches / 12, // Position at top edge
       WALL_POSITION
     ];
     return fallbackPosition;

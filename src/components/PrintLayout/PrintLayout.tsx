@@ -41,11 +41,11 @@ const PrintLayout: React.FC<PrintLayoutProps> = ({ wallDimensions: propWallDimen
     const stored = localStorage.getItem('pegwall_data');
     if (stored) {
       const data = JSON.parse(stored);
-      return data.wallDimensions || { width: 3.83, height: 4.33 };
+      return data.wallDimensions || { width: 6.0, height: 4.33 };
     }
     
     // Default fallback
-    return { width: 3.83, height: 4.33 };
+    return { width: 6.0, height: 4.33 };
   });
   
   const [placedItems, setPlacedItems] = useState(() => {

@@ -61,10 +61,24 @@ export const calculatePegHoleGrid = (wallWidthInches: number, wallHeightInches: 
   return { horizontalPositions, verticalPositions };
 };
 
+// Calculate the correct width for furniture based on peg hole spans
+export const calculateFurnitureWidth = (horizontalSlots: number): number => {
+  // Width = (number of slots × 1") + (number of spacings × 8")
+  const slotWidth = 1; // 1 inch per slot
+  const spacingWidth = 8; // 8 inches between slots
+  const numberOfSpacings = horizontalSlots - 1;
+  
+  return (horizontalSlots * slotWidth) + (numberOfSpacings * spacingWidth);
+};
+
+// Calculate the correct height for furniture based on peg hole spans
+export const calculateFurnitureHeight = (verticalSlots: number, horizontalSlots: number, originalHeight: number): number => {
+  // Use the original height - don't recalculate based on peg holes
+  return originalHeight;
+};
+
 // Calculate the optimal position for furniture to align with peg holes
 export const calculateFurniturePosition = (
-  furnitureWidthInches: number,
-  furnitureHeightInches: number,
   pegHolesToSpan: { horizontal: number; vertical: number },
   targetPosition: [number, number],
   wallWidthInches: number,
@@ -80,7 +94,14 @@ export const calculateFurniturePosition = (
   let closestY = 0;
   let minDistance = Infinity;
 
-  // Try each possible peg hole position as the top-left anchor
+  // Calculate effective boundaries based on the actual peg hole positions
+  // Allow furniture to align with the edges of the peg holes
+  const effectiveWallLeft = horizontalPositions[0] - PEG_HOLE_SIZE.width / 2;
+  const effectiveWallRight = horizontalPositions[horizontalPositions.length - 1] + PEG_HOLE_SIZE.width / 2;
+  const effectiveWallBottom = verticalPositions[0] - PEG_HOLE_SIZE.height / 2;
+  const effectiveWallTop = verticalPositions[verticalPositions.length - 1] + PEG_HOLE_SIZE.height / 2;
+
+  // Try each possible peg hole position as the anchor
   for (let i = 0; i <= horizontalPositions.length - pegHolesToSpan.horizontal; i++) {
     for (let j = 0; j <= verticalPositions.length - pegHolesToSpan.vertical; j++) {
       // Calculate the position where furniture should be placed
@@ -88,16 +109,23 @@ export const calculateFurniturePosition = (
       const firstPegHoleX = horizontalPositions[i];
       const firstPegHoleY = verticalPositions[j];
       
-      // Position furniture so its top-left corner aligns with the first peg hole
+      // Position furniture so its left edge aligns with the first peg hole's left edge
       const furnitureX = firstPegHoleX - PEG_HOLE_SIZE.width / 2;
       const furnitureY = firstPegHoleY - PEG_HOLE_SIZE.height / 2;
       
-      // Check if this position keeps the furniture within wall boundaries
+      // Calculate the actual furniture dimensions based on peg hole spans
+      const furnitureWidthInches = calculateFurnitureWidth(pegHolesToSpan.horizontal);
+      const furnitureHeightInches = calculateFurnitureHeight(pegHolesToSpan.vertical, pegHolesToSpan.horizontal, 10); // Use default height
+      
+      // Check if position is within reasonable bounds
+      // Allow furniture to extend slightly beyond the peg hole grid for larger items
+      // But be more restrictive for very large items
+      const margin = Math.min(2, Math.max(0.5, (effectiveWallRight - effectiveWallLeft - furnitureWidthInches) / 4));
       if (
-        furnitureX >= -wallWidthInches / 2 &&
-        furnitureX + furnitureWidthInches <= wallWidthInches / 2 &&
-        furnitureY >= 0 &&
-        furnitureY + furnitureHeightInches <= wallHeightInches
+        furnitureX >= effectiveWallLeft - margin &&
+        furnitureX + furnitureWidthInches <= effectiveWallRight + margin &&
+        furnitureY >= effectiveWallBottom - margin &&
+        furnitureY + furnitureHeightInches <= effectiveWallTop + margin
       ) {
         const distance = Math.sqrt(
           (targetXInches - furnitureX) ** 2 + 
@@ -119,11 +147,11 @@ export const calculateFurniturePosition = (
 
 // Check if a furniture position is valid (within bounds and doesn't overlap)
 export const isValidFurniturePosition = (
-  furnitureWidthInches: number,
-  furnitureHeightInches: number,
+  pegHolesToSpan: { horizontal: number; vertical: number },
   position: [number, number],
   wallWidthInches: number,
   wallHeightInches: number,
+  furnitureHeightInches: number,
   otherFurniture: Array<{
     position: [number, number];
     dimensions: { width: number; height: number };
@@ -135,12 +163,22 @@ export const isValidFurniturePosition = (
   const furnitureXInches = unitsToInches(x);
   const furnitureYInches = unitsToInches(y);
   
-  // Check wall boundaries
+  // Calculate the actual furniture dimensions based on peg hole spans
+  const furnitureWidthInches = calculateFurnitureWidth(pegHolesToSpan.horizontal);
+  // Use the passed furniture height parameter
+  
+  // Check wall boundaries - use peg hole grid boundaries
+  const { horizontalPositions, verticalPositions } = calculatePegHoleGrid(wallWidthInches, wallHeightInches);
+  const effectiveWallLeft = horizontalPositions[0] - PEG_HOLE_SIZE.width / 2;
+  const effectiveWallRight = horizontalPositions[horizontalPositions.length - 1] + PEG_HOLE_SIZE.width / 2;
+  const effectiveWallBottom = verticalPositions[0] - PEG_HOLE_SIZE.height / 2;
+  const effectiveWallTop = verticalPositions[verticalPositions.length - 1] + PEG_HOLE_SIZE.height / 2;
+  
   if (
-    furnitureXInches < -wallWidthInches / 2 ||
-    furnitureXInches + furnitureWidthInches > wallWidthInches / 2 ||
-    furnitureYInches < 0 ||
-    furnitureYInches + furnitureHeightInches > wallHeightInches
+    furnitureXInches < effectiveWallLeft ||
+    furnitureXInches + furnitureWidthInches > effectiveWallRight ||
+    furnitureYInches < effectiveWallBottom ||
+    furnitureYInches + furnitureHeightInches > effectiveWallTop
   ) {
     return false;
   }

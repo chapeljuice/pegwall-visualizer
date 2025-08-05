@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { Mesh, Vector3, Vector2, Raycaster, Plane } from 'three';
 import { FurnitureItem as FurnitureItemType } from '../../types/furniture';
-import { calculateFurniturePosition, isValidFurniturePosition, inchesToUnits, convertDimensionsToUnits } from '../../utils/pegHoleUtils';
+import { calculateFurniturePosition, isValidFurniturePosition, inchesToUnits, convertDimensionsToUnits, calculateFurnitureWidth, calculateFurnitureHeight } from '../../utils/pegHoleUtils';
 import styles from './FurnitureItem.module.css';
 
 interface BaseFurnitureItemProps {
@@ -34,7 +34,7 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
   onMove,
   onDragStart,
   onDragEnd,
-  wallDimensions = { width: 8, height: 8 }, // Default to 8x8 feet
+  wallDimensions = { width: 6, height: 8 }, // Default to 6x8 feet
   placedItems = [], // Default to empty array
   children,
   showLabel = true,
@@ -46,7 +46,14 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
   const raycaster = useRef(new Raycaster());
   const mouse = useRef(new Vector2());
 
-  const { width, height, depth } = convertDimensionsToUnits(item.dimensions);
+  // Calculate the actual dimensions based on peg hole spans
+  const actualWidthInches = calculateFurnitureWidth(item.pegHolesToSpan.horizontal);
+  const actualHeightInches = calculateFurnitureHeight(item.pegHolesToSpan.vertical, item.pegHolesToSpan.horizontal, item.dimensions.height);
+  const { width, height, depth } = {
+    width: inchesToUnits(actualWidthInches),
+    height: inchesToUnits(actualHeightInches),
+    depth: convertDimensionsToUnits(item.dimensions).depth
+  };
   const [x, y, z] = item.position;
 
   // Wall boundaries (in Three.js units)
@@ -106,14 +113,8 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
     const wallWidthInches = wallDimensions.width * 12;
     const wallHeightInches = wallDimensions.height * 12;
     
-    // Convert furniture dimensions from Three.js units to inches
-    const furnitureWidthInches = width * 12;
-    const furnitureHeightInches = height * 12;
-    
     // Use the new peg hole utilities to calculate optimal position
     const [snappedX, snappedY] = calculateFurniturePosition(
-      furnitureWidthInches,
-      furnitureHeightInches,
       item.pegHolesToSpan,
       [position.x, position.y],
       wallWidthInches,
@@ -121,7 +122,7 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
     );
     
     return [snappedX, snappedY, WALL_POSITION];
-  }, [wallDimensions, width, height, item.pegHolesToSpan]);
+  }, [wallDimensions, item.pegHolesToSpan]);
 
   // Function to constrain position within wall boundaries using new peg hole utilities
   const constrainToWall = useCallback((position: [number, number, number]): [number, number, number] => {
@@ -131,28 +132,28 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
     const wallWidthInches = WALL_WIDTH * 12;
     const wallHeightInches = WALL_HEIGHT * 12;
     
-    // Convert furniture dimensions from Three.js units to inches
-    const furnitureWidthInches = width * 12;
-    const furnitureHeightInches = height * 12;
-    
     // Convert other furniture positions to the format expected by isValidFurniturePosition
     const otherFurniture = placedItems
       .filter(other => other.id !== item.id)
       .map(other => ({
         position: [other.position[0], other.position[1]] as [number, number], // Only use x, y coordinates
         dimensions: {
-          width: other.dimensions.width * 12, // Convert to inches
-          height: other.dimensions.height * 12,
+          width: calculateFurnitureWidth(other.pegHolesToSpan.horizontal), // Use calculated width
+          height: calculateFurnitureHeight(other.pegHolesToSpan.vertical, other.pegHolesToSpan.horizontal, other.dimensions.height), // Use calculated height
         }
       }));
     
+    // Calculate the actual furniture dimensions based on peg hole spans
+    const furnitureWidthInches = calculateFurnitureWidth(item.pegHolesToSpan.horizontal);
+    const furnitureHeightInches = calculateFurnitureHeight(item.pegHolesToSpan.vertical, item.pegHolesToSpan.horizontal, item.dimensions.height);
+    
     // Check if current position is valid
     if (isValidFurniturePosition(
-      furnitureWidthInches,
-      furnitureHeightInches,
+      item.pegHolesToSpan,
       [x, y],
       wallWidthInches,
       wallHeightInches,
+      furnitureHeightInches,
       otherFurniture
     )) {
       return [x, y, z];
@@ -160,8 +161,6 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
     
     // If not valid, find the closest valid position
     const [constrainedX, constrainedY] = calculateFurniturePosition(
-      furnitureWidthInches,
-      furnitureHeightInches,
       item.pegHolesToSpan,
       [x, y],
       wallWidthInches,
@@ -169,7 +168,7 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
     );
     
     return [constrainedX, constrainedY, WALL_POSITION];
-  }, [WALL_WIDTH, WALL_HEIGHT, width, height, depth, item.pegHolesToSpan, placedItems, item.id]);
+  }, [WALL_WIDTH, WALL_HEIGHT, item.pegHolesToSpan, placedItems, item.id]);
 
   // Function to get intersection with wall plane
   const getWallIntersection = useCallback((mouseX: number, mouseY: number): Vector3 | null => {
@@ -221,8 +220,12 @@ const BaseFurnitureItem: React.FC<BaseFurnitureItemProps> = ({
       // Get the wall intersection for the current mouse position
       const intersection = getWallIntersection(event.clientX, event.clientY);
       if (intersection) {
+        // The furniture is positioned by its top-left corner, so use the intersection point directly
+        // No offset needed - furniture should snap to top-left corners of slots
+        const adjustedIntersection = intersection;
+        
         // Snap to grid
-        const snappedPosition = snapToGrid(intersection);
+        const snappedPosition = snapToGrid(adjustedIntersection);
         
         // Constrain to wall boundaries
         const constrainedPosition = constrainToWall(snappedPosition);

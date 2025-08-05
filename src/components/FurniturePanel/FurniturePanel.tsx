@@ -135,14 +135,14 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
         {
           id: '2-slot',
           name: '2 Slot',
-          dimensions: { width: 8, height: 8, depth: 6 }, // 8" × 8" × 6"
+          dimensions: { width: 10, height: 8, depth: 6 }, // 10" × 8" × 6"
           price: 0,
           pegHolesToSpan: { horizontal: 2, vertical: 2 },
         },
         {
           id: '3-slot',
           name: '3 Slot',
-          dimensions: { width: 16, height: 8, depth: 6 }, // 16" × 8" × 6"
+          dimensions: { width: 20, height: 8, depth: 6 }, // 20" × 8" × 6"
           price: 60,
           pegHolesToSpan: { horizontal: 3, vertical: 2 },
         },
@@ -163,21 +163,21 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
         {
           id: '2-slot',
           name: '2 Slot',
-          dimensions: { width: 8, height: 10, depth: 10 }, // 8" × 10" × 10"
+          dimensions: { width: 10, height: 10, depth: 10 }, // 10" × 10" × 10"
           price: 0,
           pegHolesToSpan: { horizontal: 2, vertical: 2 },
         },
         {
           id: '3-slot',
           name: '3 Slot',
-          dimensions: { width: 16, height: 10, depth: 10 }, // 16" × 10" × 10"
+          dimensions: { width: 20, height: 10, depth: 10 }, // 20" × 10" × 10"
           price: 65,
           pegHolesToSpan: { horizontal: 3, vertical: 2 },
         },
         {
           id: '4-slot',
           name: '4 Slot',
-          dimensions: { width: 24, height: 10, depth: 10 }, // 24" × 10" × 10"
+          dimensions: { width: 30, height: 10, depth: 10 }, // 30" × 10" × 10"
           price: 115,
           pegHolesToSpan: { horizontal: 4, vertical: 2 },
         },
