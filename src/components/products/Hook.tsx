@@ -41,10 +41,22 @@ const Hook: React.FC<HookProps> = (props) => {
         />
       </Box>
 
-      {/* Hook curve at the top - using wooden texture */}
+      {/* Bottom hook - horizontal extension (positive z-axis) */}
       <Box
-        args={[width * 3, width, depth]}
-        position={[width / 2, height - width / 2, depth / 2]}
+        args={[width, width, depth]}
+        position={[width / 2, width / 2, depth + depth / 2]}
+      >
+        <meshStandardMaterial
+          map={woodenTexture}
+          roughness={0.7}
+          metalness={0.1}
+        />
+      </Box>
+
+      {/* Bottom hook - vertical extension (positive y-axis) */}
+      <Box
+        args={[width, width, width]}
+        position={[width / 2, depth / 4, depth + depth]}
       >
         <meshStandardMaterial
           map={woodenTexture}
