@@ -43,8 +43,8 @@ const BackgroundImageControls: React.FC<BackgroundImageControlsProps> = ({
         <label className={styles.label}>Position Y: {position[1].toFixed(1)}</label>
         <input
           type="range"
-          min="-10"
-          max="20"
+          min="-5"
+          max="15"
           step="0.1"
           value={position[1]}
           onChange={(e) => onPositionChange(position[0], parseFloat(e.target.value), position[2])}
@@ -52,18 +52,7 @@ const BackgroundImageControls: React.FC<BackgroundImageControlsProps> = ({
         />
       </div>
 
-      <div className={styles.section}>
-        <label className={styles.label}>Position Z: {position[2].toFixed(1)}</label>
-        <input
-          type="range"
-          min="-20"
-          max="0"
-          step="0.1"
-          value={position[2]}
-          onChange={(e) => onPositionChange(position[0], position[1], parseFloat(e.target.value))}
-          className={styles.slider}
-        />
-      </div>
+
 
       <div className={styles.section}>
         <label className={styles.label}>Scale: {scale.toFixed(1)}</label>
@@ -93,7 +82,7 @@ const BackgroundImageControls: React.FC<BackgroundImageControlsProps> = ({
 
       <div className={styles.presetButtons}>
         <button 
-          onClick={() => onPositionChange(0, 10, -10)}
+          onClick={() => onPositionChange(0, 4, position[2])}
           className={styles.presetButton}
         >
           Center

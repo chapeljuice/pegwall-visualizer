@@ -23,16 +23,16 @@ const FurnitureVisualizer: React.FC = () => {
   const [placedItems, setPlacedItems] = useState<FurnitureItemType[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [showRecommendations, setShowRecommendations] = useState(true);
+  const [showRecommendations, setShowRecommendations] = useState(false);
   const [wallDimensions, setWallDimensions] = useState({
     width: 3.83, // 3.83 feet (5 horizontal slots × 8" + 6" margin = 46" = 3.83')
     height: 4.33, // 4.33 feet (8 vertical slots × 6" + 4" margin = 52" = 4.33')
   });
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [backgroundTexture, setBackgroundTexture] = useState<THREE.Texture | null>(null);
-  const [backgroundPosition, setBackgroundPosition] = useState<[number, number, number]>([0, 10, -10]);
+  const [backgroundPosition, setBackgroundPosition] = useState<[number, number, number]>([0, 4, -2]);
   const [backgroundScale, setBackgroundScale] = useState<number>(1);
-  const [backgroundOpacity, setBackgroundOpacity] = useState<number>(0.8);
+  const [backgroundOpacity, setBackgroundOpacity] = useState<number>(0.6);
   const [showBackgroundControls, setShowBackgroundControls] = useState<boolean>(false);
   const [isUploadMinimized, setIsUploadMinimized] = useState<boolean>(false);
   const cameraRef = useRef<any>(null);
@@ -614,7 +614,7 @@ const FurnitureVisualizer: React.FC = () => {
           onCreated={({ camera }) => {
             cameraRef.current = camera;
             // Set the default camera to look at the same position as front view
-            camera.lookAt(0, 4, -2);
+            camera.lookAt(0, 4, -1.9);
           }}
           gl={{ alpha: false }}
         >
@@ -655,7 +655,7 @@ const FurnitureVisualizer: React.FC = () => {
             enableRotate={false}
             minDistance={2}
             maxDistance={20}
-            target={[0, wallDimensions.height / 2, WALL_POSITION]}
+            target={[0, wallDimensions.height / 2, -1.9]}
           />
           
           {/* Placed Furniture Items */}
@@ -834,6 +834,16 @@ const FurnitureVisualizer: React.FC = () => {
           >
             Print Layout
           </Button>
+          {!showRecommendations && (
+            <Button
+              variant="secondary"
+              onClick={() => setShowRecommendations(true)}
+              title={recommendations.length > 0 ? "Show Smart Suggestions" : "Smart Suggestions (add items to see recommendations)"}
+              className={styles.brainButton}
+            >
+              🧠
+            </Button>
+          )}
         </div>
 
         {/* Wall Dimensions Form */}
@@ -855,17 +865,7 @@ const FurnitureVisualizer: React.FC = () => {
           />
         )}
 
-        {/* Reopen Recommendations Button */}
-        {!showRecommendations && recommendations.length > 0 && (
-          <Button
-            variant="secondary"
-            onClick={() => setShowRecommendations(true)}
-            title="Show Smart Suggestions"
-            className={styles.reopenButton}
-          >
-            🧠
-          </Button>
-        )}
+
 
       {/* Background Image Upload */}
       <div className={`${styles.imageUploadContainer} ${isUploadMinimized ? styles.minimized : ''}`}>

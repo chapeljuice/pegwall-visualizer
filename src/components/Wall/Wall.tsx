@@ -21,7 +21,7 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
   const wallHeight = height;
   const wallDepth = 0.1; // 1.2 inches thick
 
-  const WALL_POSITION = -2; // Z position of the wall
+  const WALL_POSITION = -1.9; // Z position of the wall (slightly forward from background)
 
   // Get preloaded texture
   const wallTexture = getWoodenPlankTexture();

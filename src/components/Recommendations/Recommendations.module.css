@@ -150,6 +150,32 @@
   flex: 1;
 }
 
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: #636E72;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.emptyTitle {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2D3436;
+}
+
+.emptyDescription {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #636E72;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .container {

@@ -36,6 +36,8 @@
   justify-content: center;
 }
 
+
+
 .cameraPresets {
   position: absolute;
   bottom: 20px;
@@ -47,6 +49,58 @@
 
 .presetButton {
   /* Styles handled by shared Button component */
+}
+
+.brainButton {
+  position: relative;
+  background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
+  background-size: 200% 200%;
+  animation: shimmer 3s ease-in-out infinite;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 0 20px rgba(102, 126, 234, 0.4),
+    0 0 40px rgba(102, 126, 234, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.brainButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shine 2s infinite;
+}
+
+.brainButton:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    0 0 30px rgba(102, 126, 234, 0.6),
+    0 0 60px rgba(102, 126, 234, 0.3),
+    inset 0 0 30px rgba(255, 255, 255, 0.2);
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 .wallDimensionsContainer {
@@ -108,32 +162,7 @@
   100% { transform: rotate(360deg); }
 }
 
-.reopenButton {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  font-size: 20px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
 
-.reopenButton:hover {
-  background: rgba(255, 255, 255, 1);
-  border-color: rgba(102, 126, 234, 0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
 
 @media (max-width: 768px) {
   .container {
@@ -143,6 +172,8 @@
   .canvasContainer {
     height: 60vh;
   }
+
+
 
   .cameraPresets {
     bottom: 10px;
@@ -159,13 +190,7 @@
     right: 10px;
   }
   
-  .reopenButton {
-    top: 10px;
-    right: 10px;
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
-  }
+
 
   .imageUploadContainer {
     top: 10px;

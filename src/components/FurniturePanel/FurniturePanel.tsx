@@ -269,7 +269,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
             </span>
           </button>
           {activeAccordion === 'available' && (
-            <div className={styles.accordionContent}>
+            <div className={`${styles.accordionContent} ${styles.active}`}>
               <div className={styles.itemsGrid}>
                 {furnitureGroups.map((group) => (
                   <FurnitureGroupCard
@@ -296,7 +296,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
             </span>
           </button>
           {activeAccordion === 'placed' && (
-            <div className={styles.accordionContent}>
+            <div className={`${styles.accordionContent} ${styles.active}`}>
               <div className={styles.placedItems}>
                 {placedItems.length === 0 ? (
                   <p className={styles.emptyState}>

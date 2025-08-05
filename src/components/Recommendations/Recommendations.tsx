@@ -17,7 +17,33 @@ const Recommendations: React.FC<RecommendationsProps> = ({
   onClose,
 }) => {
   if (recommendations.length === 0) {
-    return null;
+    return (
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <div className={styles.headerContent}>
+            <h3 className={styles.title}>
+              🧠 Smart Suggestions
+            </h3>
+            <p className={styles.subtitle}>
+              Based on your layout and preferences
+            </p>
+          </div>
+          <Button variant="ghost" size="small" onClick={onClose} className={styles.closeButton}>
+            ×
+          </Button>
+        </div>
+        
+        <div className={styles.recommendationsList}>
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>💡</div>
+            <h4 className={styles.emptyTitle}>No suggestions yet</h4>
+            <p className={styles.emptyDescription}>
+              Add some furniture items to your wall to see personalized recommendations!
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const getRecommendationIcon = (type: string) => {

@@ -79,8 +79,8 @@
 }
 
 .accordionHeader.active {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  background: rgba(255, 255, 255, 0.8);
+  color: #2d5a2d;
 }
 
 .accordionIcon {
@@ -91,15 +91,30 @@
 }
 
 .accordionHeader.active .accordionIcon {
-  color: white;
+  color: #2d5a2d;
 }
 
 .accordionContent {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.8);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   max-height: 75vh;
   overflow-y: auto;
   padding: 15px;
+  transition: all 0.2s ease;
+}
+
+.accordionContent.active {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #2d5a2d;
+}
+
+.accordionContent.active .wallPriceInfo strong{
+  color: #2d5a2d;
+}
+
+.accordionContent.active .wallPriceInfo span{
+  color: #2d5a2d;
 }
 
 .content {
