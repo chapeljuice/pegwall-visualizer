@@ -64,12 +64,14 @@ const FurnitureVisualizer: React.FC = () => {
     rect1: { x: number; y: number; width: number; height: number },
     rect2: { x: number; y: number; width: number; height: number }
   ): boolean => {
-    return !(
+    const noOverlap = (
       rect1.x + rect1.width <= rect2.x ||
       rect2.x + rect2.width <= rect1.x ||
       rect1.y + rect1.height <= rect2.y ||
       rect2.y + rect2.height <= rect1.y
     );
+    
+    return !noOverlap;
   };
 
   // Function to check if a position conflicts with existing items
@@ -86,7 +88,7 @@ const FurnitureVisualizer: React.FC = () => {
       height: newItemDimensions.height,
     };
 
-    return placedItems.some(existingItem => {
+    const collision = placedItems.some(existingItem => {
       const [ex, ey] = existingItem.position;
       // Convert existing item dimensions to Three.js units
       const existingItemDimensions = convertDimensionsToUnits(existingItem.dimensions);
@@ -101,6 +103,8 @@ const FurnitureVisualizer: React.FC = () => {
 
       return rectanglesOverlap(newRect, existingRect);
     });
+
+    return collision;
   };
 
   // Function to find a non-conflicting position for a new item
@@ -135,10 +139,10 @@ const FurnitureVisualizer: React.FC = () => {
           position[1] >= 0.5 && // 6 inches margin
           position[1] + furnitureDimensions.height <= wallHeight - 0.5
         ) {
-          // Check for collisions using converted dimensions
-          if (!hasCollision({ ...item, dimensions: furnitureDimensions }, position)) {
-            return position;
-          }
+                  // Check for collisions using converted dimensions
+        if (!hasCollision({ ...item, dimensions: furnitureDimensions }, position)) {
+          return position;
+        }
         }
       }
     }
