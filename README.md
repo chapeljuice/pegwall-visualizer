@@ -1,4 +1,4 @@
-# KerfWall - Interactive Furniture Designer
+# KERF Wall - Interactive Furniture Designer
 
 A modern web application for designing and visualizing custom plywood furniture on Kerf walls. Built with React, TypeScript, and Three.js.
 
@@ -9,6 +9,7 @@ A modern web application for designing and visualizing custom plywood furniture 
 - **Drag & Drop Placement**: Place furniture items on Kerf walls with grid snapping
 - **Camera Controls**: Multiple preset views (Front, Top, 45°, Side) plus zoom controls
 - **Collision Detection**: Prevents furniture overlap and ensures proper placement
+- **Dynamic Wall Sizing**: Adjustable wall dimensions with automatic slot grid calculation
 
 ### 🛋️ **Comprehensive Furniture Catalog**
 - **Cubby Storage**: 6 size options (10"×10", 10"×16", 20"×10", 20"×16", 39"×10", 40"×16")
@@ -29,19 +30,57 @@ A modern web application for designing and visualizing custom plywood furniture 
 - **Shopping Cart**: View all placed items with color swatches and prices
 - **Total Calculation**: Automatic sum of all furniture costs
 - **Item Removal**: Remove individual items or clear entire wall
+- **Wall System Pricing**: Automatic calculation based on slot grid size
+
+### 📄 **Print Layout & Documentation**
+- **Professional Print Layout**: Clean, printable design with comprehensive cost breakdown
+- **Total Project Cost**: Prominent display of wall system + furniture costs
+- **Detailed Specifications**: Wall dimensions, slot grid, and individual item details
+- **Furniture List**: Complete inventory with colors, materials, and prices
+- **Cost Breakdown**: Itemized wall system and furniture costs
+- **Print-Friendly Design**: Optimized for printing with proper page breaks
+
+### 🧠 **Smart Recommendations**
+- **AI-Powered Suggestions**: Intelligent furniture recommendations based on wall size and existing items
+- **Color Coordination**: Recommendations include color matching suggestions
+- **Space Optimization**: Suggests items that fit available wall space
+- **Dismissal System**: Hide recommendations you don't want to see again
+
+### 🖼️ **Background Customization**
+- **Image Upload**: Upload custom background images for your wall
+- **Position Controls**: Adjust background image position and scale
+- **Opacity Settings**: Control background image transparency
+- **Minimized Interface**: Collapsible upload controls for clean workspace
 
 ### 🎯 **User Experience**
 - **Expandable Product Cards**: Truncated descriptions with full details on expansion
 - **One-Size Display**: Clean interface for single-size items
 - **Color Swatches**: Visual color indicators in cart view
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Smooth Scrolling**: Full page navigation with proper overflow handling
 
 ## Tech Stack
 
-- **Frontend**: React 18 with TypeScript
-- **3D Graphics**: Three.js with React Three Fiber and @react-three/drei
-- **Styling**: CSS Modules for component-scoped styles
-- **Build Tool**: Create React App
+### **Frontend Framework**
+- **React 18** with TypeScript for type-safe development
+- **React Router DOM** for client-side routing and navigation
+- **CSS Modules** for component-scoped styling
+
+### **3D Graphics & Visualization**
+- **Three.js** for 3D rendering and scene management
+- **React Three Fiber** for React integration with Three.js
+- **@react-three/drei** for additional Three.js utilities and components
+- **OrbitControls** for camera manipulation and user interaction
+
+### **Development Tools**
+- **Create React App** for project scaffolding and build configuration
+- **TypeScript** for static type checking and better developer experience
+- **ESLint** for code quality and consistency
+
+### **State Management**
+- **React Hooks** (useState, useEffect, useMemo, useCallback) for local state
+- **localStorage** for data persistence between sessions
+- **URL Parameters** for sharing and bookmarking layouts
 
 ## Getting Started
 
@@ -77,39 +116,59 @@ src/
 ├── components/
 │   ├── FurnitureVisualizer/     # Main 3D visualization component
 │   ├── FurniturePanel/          # Product selection and cart management
+│   ├── PrintLayout/             # Print layout and documentation
 │   ├── products/                # Individual furniture 3D components
 │   │   ├── BaseFurnitureItem.tsx
-│   │   ├── Cubby10x10.tsx
-│   │   ├── Cubby20x10.tsx
+│   │   ├── Cubby.tsx
 │   │   ├── Hook.tsx
 │   │   ├── Table.tsx
 │   │   ├── MagazineRack.tsx
 │   │   ├── Bookshelf.tsx
 │   │   └── Easel.tsx
 │   ├── Wall/                    # 3D wall and floor components
-│   └── WallDimensionsForm/      # Wall size configuration
+│   ├── WallDimensionsForm/      # Wall size configuration
+│   ├── Recommendations/         # AI-powered furniture suggestions
+│   └── shared/                  # Reusable UI components
 ├── types/
 │   └── furniture.ts             # TypeScript interfaces and shared colors
-└── App.tsx                      # Main application component
+├── utils/
+│   ├── pegHoleUtils.ts         # Wall calculation and pricing utilities
+│   └── recommendationEngine.ts  # AI recommendation algorithms
+├── hooks/
+│   └── useTextureLoader.ts     # Texture loading and management
+└── App.tsx                      # Main application component with routing
 ```
 
 ## Usage
 
 ### **Designing Your Space**
 
-1. **Browse Products**: Use the "Available Products" tab to explore furniture options
-2. **Customize Items**: 
+1. **Configure Wall**: Use the wall dimensions form to set your Kerf wall size
+2. **Browse Products**: Use the "Available Products" tab to explore furniture options
+3. **Customize Items**: 
    - Click on product cards to expand and see customization options
    - Select size variants (where available)
    - Choose from 18 color options
    - See real-time price updates
-3. **Place Furniture**: Click "Add to Wall" to place items in the 3D scene
-4. **Arrange Items**: Drag placed items to reposition them on the peg hole grid
-5. **Manage Cart**: 
+4. **Place Furniture**: Click "Add to Wall" to place items in the 3D scene
+5. **Arrange Items**: Drag placed items to reposition them on the slot grid
+6. **Manage Cart**: 
    - View all placed items in the "View Cart" tab
    - See color swatches and individual prices
    - Remove items or clear the entire wall
-6. **Camera Controls**: Use preset views or free camera movement to explore your design
+7. **Camera Controls**: Use preset views or free camera movement to explore your design
+8. **Get Recommendations**: Click the brain icon for AI-powered furniture suggestions
+9. **Customize Background**: Upload and position background images for context
+10. **Print Layout**: Click "Send to Printer" to generate a professional print layout
+
+### **Print Layout Features**
+
+- **Professional Documentation**: Clean, printable design with comprehensive details
+- **Total Cost Summary**: Prominent display of complete project cost
+- **Wall Specifications**: Dimensions, slot grid, and wall system pricing
+- **Furniture Inventory**: Complete list with colors, materials, and individual prices
+- **Cost Breakdown**: Itemized wall system and furniture costs
+- **Print Optimization**: Proper page breaks and print-friendly styling
 
 ### **Furniture Specifications**
 
@@ -121,6 +180,13 @@ src/
 | Magazine Rack | 2-slot (8"×8"×6"), 3-slot (16"×8"×6") | $95 | Natural only |
 | Bookshelf | 2-slot (8"×10"×10"), 3-slot (16"×10"×10"), 4-slot (24"×10"×10") | $155 | Natural only |
 | Easel | Standard (30"×26"×5") | $565 | 18 colors |
+
+### **Wall System Pricing**
+
+- **Base Price**: $165 for 3×4 wall (12 slots)
+- **Scaling**: Price increases linearly with slot count
+- **Maximum Price**: $4,450 for 25×16 wall (400 slots)
+- **Automatic Calculation**: Based on wall dimensions and slot grid
 
 ## Development
 
@@ -139,10 +205,18 @@ src/
 
 ### **3D Scene Features**
 
-- **Grid System**: 8" horizontal × 6" vertical peg hole spacing
+- **Grid System**: 8" horizontal × 6" vertical slot spacing
 - **Wall Positioning**: Furniture back walls flush against Kerf wall
 - **Collision Detection**: Prevents overlapping placement
 - **Boundary Constraints**: Keeps furniture within wall dimensions
+- **Dynamic Camera**: Automatic camera positioning based on wall size
+
+### **Print Layout System**
+
+- **Data Persistence**: Uses localStorage to maintain state between tabs
+- **Routing**: React Router for navigation between main app and print layout
+- **Responsive Design**: Adapts to different screen sizes and print formats
+- **Cost Calculation**: Real-time pricing with wall system and furniture costs
 
 ## Future Enhancements
 
@@ -153,6 +227,8 @@ src/
 - **Export Options**: Generate images, 3D models, or manufacturing files
 - **AR Integration**: View furniture in your actual space
 - **Collaboration**: Real-time design sharing
+- **Advanced AI**: More sophisticated recommendation algorithms
+- **Cloud Storage**: Save designs to cloud for cross-device access
 
 ## Contributing
 
