@@ -451,13 +451,26 @@ const FurnitureVisualizer: React.FC = () => {
     
     const totalPrice = placedItems.reduce((sum, item) => sum + item.price, 0) + wallPrice;
 
-    // Generate peg holes HTML
+    // Generate peg holes HTML based on actual wall dimensions
     const generatePegHoles = () => {
       const pegHoles = [];
-      for (let x = 1; x <= 7; x++) {
-        for (let y = 1; y <= 7; y++) {
-          const left = (x * 80) + 20;
-          const top = (y * 80) + 20;
+      const wallWidthInches = wallDimensions.width * 12;
+      const wallHeightInches = wallDimensions.height * 12;
+      
+      // Calculate number of holes based on actual dimensions
+      const horizontalHoles = Math.round((wallWidthInches - 16) / 8); // 8" spacing, 8" margins
+      const verticalHoles = Math.round((wallHeightInches - 12) / 6);   // 6" spacing, 6" margins
+      
+      // Calculate spacing for the print layout (600px container)
+      const containerWidth = 580; // 600px - 20px margins
+      const containerHeight = 580;
+      const holeSpacingX = containerWidth / (horizontalHoles + 1);
+      const holeSpacingY = containerHeight / (verticalHoles + 1);
+      
+      for (let x = 1; x <= horizontalHoles; x++) {
+        for (let y = 1; y <= verticalHoles; y++) {
+          const left = (x * holeSpacingX) + 10;
+          const top = (y * holeSpacingY) + 10;
           pegHoles.push(`<div class="peg-hole" style="left: ${left}px; top: ${top}px;"></div>`);
         }
       }
@@ -523,8 +536,8 @@ const FurnitureVisualizer: React.FC = () => {
           .item-price { font-weight: bold; }
           .total-section { margin-top: 30px; padding-top: 20px; border-top: 2px solid #333; font-size: 18px; font-weight: bold; }
           .color-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid #ccc; margin-right: 5px; }
-          .wall-container { position: relative; width: 600px; height: 600px; border: 3px solid #8B4513; background: linear-gradient(45deg, #DEB887 25%, transparent 25%), linear-gradient(-45deg, #DEB887 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #DEB887 75%), linear-gradient(-45deg, transparent 75%, #DEB887 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; margin: 20px auto; overflow: hidden; }
-          .peg-hole { position: absolute; width: 8px; height: 24px; background: #2D3436; border-radius: 2px; }
+          .wall-container { position: relative; width: 600px; height: 600px; border: 3px solid #8B4513; background: #DEB887; margin: 20px auto; overflow: hidden; }
+          .peg-hole { position: absolute; width: 6px; height: 20px; background: #2D3436; border-radius: 3px; border: 1px solid #1a1a1a; }
           .furniture-item-print { position: absolute; border: 2px solid #333; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.8); overflow: hidden; }
           .furniture-item-print.cubby { background: linear-gradient(135deg, #4CAF50, #45a049); }
           .furniture-item-print.hook { background: linear-gradient(135deg, #FF9800, #F57C00); }
