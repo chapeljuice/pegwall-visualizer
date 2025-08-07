@@ -205,6 +205,27 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
       ],
       colors: SHARED_COLORS,
     },
+    {
+      id: 'paper-towels',
+      name: 'Paper Towels',
+      description: 'They mops things up when things get messy.',
+      type: 'storage',
+      material: 'plywood',
+      basePrice: 150,
+      imagePath: '/images/products/paper-towels.png',
+      variants: [
+        {
+          id: 'standard',
+          name: 'Standard',
+          dimensions: { width: 18, height: 8, depth: 6 }, // 18" × 8" × 6" (calculated for 3×2 slots)
+          price: 0,
+          pegHolesToSpan: { horizontal: 3, vertical: 2 },
+        },
+      ],
+      colors: [
+        { id: 'natural', name: 'Natural', hexCode: '#F5F5DC', price: 0 },
+      ],
+    },
   ];
 
   // Calculate wall price based on current dimensions
@@ -228,6 +249,8 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
       return '/images/products/bookshelf.jpg';
     } else if (itemName.includes('Easel')) {
       return '/images/products/easel.jpg';
+    } else if (itemName.includes('Paper Towels')) {
+      return '/images/products/paper-towels.png';
     }
     return '/images/products/cubby-10x10.jpg'; // Default fallback
   };

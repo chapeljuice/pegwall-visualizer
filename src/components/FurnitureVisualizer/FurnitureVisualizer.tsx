@@ -9,6 +9,7 @@ import Table from '../products/Table';
 import MagazineRack from '../products/MagazineRack';
 import Bookshelf from '../products/Bookshelf';
 import Easel from '../products/Easel';
+import PaperTowels from '../products/PaperTowels';
 import FurniturePanel from '../FurniturePanel/FurniturePanel';
 import WallDimensionsForm from '../WallDimensionsForm/WallDimensionsForm';
 import Recommendations from '../Recommendations/Recommendations';
@@ -424,6 +425,20 @@ const FurnitureVisualizer: React.FC = () => {
           };
           break;
           
+        case 'paper-towels':
+          defaultItem = {
+            id: `Paper-Towels-standard-${Date.now()}`,
+            name: 'Paper Towels - Standard',
+            type: 'storage',
+            dimensions: { width: 18, height: 8, depth: 6 }, // in inches
+            color: recommendation.color || '#F5F5DC',
+            material: 'plywood',
+            price: 150,
+            position: [0, 0, 0],
+            pegHolesToSpan: { horizontal: 3, vertical: 2 },
+          };
+          break;
+          
         default:
           return; // Unknown furniture type
       }
@@ -518,6 +533,8 @@ const FurnitureVisualizer: React.FC = () => {
             castShadow
           />
           <pointLight position={[-10, 10, -10]} intensity={0.3} />
+
+
 
           {/* 3D Scene */}
           <Wall dimensions={wallDimensions} />
@@ -638,6 +655,23 @@ const FurnitureVisualizer: React.FC = () => {
                   wallDimensions={wallDimensions}
                   placedItems={placedItems}
                   showLabel={false}
+                />
+              );
+            }
+            
+            if (item.name.includes('Paper Towels')) {
+              console.log('Rendering as Paper Towels');
+              return (
+                <PaperTowels
+                  key={item.id}
+                  item={item}
+                  isSelected={selectedItemId === item.id}
+                  onSelect={() => handleSelectItem(item.id)}
+                  onMove={handleMoveItem}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  wallDimensions={wallDimensions}
+                  placedItems={placedItems}
                 />
               );
             }
