@@ -201,7 +201,7 @@ export const isValidFurniturePosition = (
   return true;
 }; 
 
-// Calculate the price of the Kerf wall based on grid size
+// Calculate the price of the Peg wall based on grid size
 export const calculateWallPrice = (horizontalHoles: number, verticalHoles: number): number => {
   // Base price for 3x4 wall: $165
   // Price for 25x16 wall: $4450

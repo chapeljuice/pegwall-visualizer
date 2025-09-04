@@ -274,7 +274,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        <h2>KERF Wall Designer</h2>
+        <h2>Peg Wall Designer</h2>
         <div className={styles.instructions}>
           <p>Click a product group to see customization options. Drag placed items to move them around!</p>
           <p>Furniture snaps to a 16" × 8" slot grid.</p>
@@ -369,7 +369,7 @@ const FurniturePanel: React.FC<FurniturePanelProps> = ({
                     ))}
                     <div className={styles.wallPrice}>
                       <div className={styles.wallPriceInfo}>
-                        <strong>Kerf Wall ({wallHorizontalHoles} × {wallVerticalHoles} holes)</strong>
+                        <strong>Peg Wall ({wallHorizontalHoles} × {wallVerticalHoles} holes)</strong>
                         <span>{formatCurrency(wallPrice)}</span>
                       </div>
                     </div>

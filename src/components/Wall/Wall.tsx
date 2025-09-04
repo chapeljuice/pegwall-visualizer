@@ -37,7 +37,7 @@ const Wall: React.FC<WallProps> = ({ dimensions }) => {
 
   return (
     <>
-      {/* Back wall (Kerf wall) */}
+      {/* Back wall (Peg wall) */}
       <Plane
         args={[wallWidth, wallHeight]}
         position={[0, wallHeight / 2, WALL_POSITION]}

@@ -74,13 +74,13 @@ const WallDimensionsForm: React.FC<WallDimensionsFormProps> = ({ dimensions, onC
         onClick={() => setIsOpen(!isOpen)}
         className={styles.toggleButton}
       >
-        ⚙️ Kerf Wall Grid
+        ⚙️ Peg Wall Grid
       </Button>
       
       {isOpen && (
         <div className={styles.form}>
-          <h3>Edit Kerf Wall Grid</h3>
-          <p>This is the basic building block of the Kerf Wall system. Panels are hung on the wall using metal strut, creating a sturdy, modular platform to hang the Kerf Wall accessories from. All hardware is included.<br /><br />Panels sizes are based on the spacing of the slots, and all of our standard size combinations are represented on this page. Of course, DIYers are encouraged to make modifications on their own. The panels are just plywood and can be cut on site as needed. For example, the edges of panels can be trimmed to precisely fit your space and holes can be cut to access outlets that would otherwise get covered up.</p>
+          <h3>Edit Peg Wall Grid</h3>
+          <p>This is the basic building block of the Peg Wall system. Panels are hung on the wall using metal strut, creating a sturdy, modular platform to hang the Peg Wall accessories from. All hardware is included.<br /><br />Panels sizes are based on the spacing of the slots, and all of our standard size combinations are represented on this page. Of course, DIYers are encouraged to make modifications on their own. The panels are just plywood and can be cut on site as needed. For example, the edges of panels can be trimmed to precisely fit your space and holes can be cut to access outlets that would otherwise get covered up.</p>
           <div className={styles.dimensionGroup}>
             <label>Horizontal Slots:</label>
             <div className={styles.inputGroup}>
